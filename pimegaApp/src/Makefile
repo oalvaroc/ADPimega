@@ -7,8 +7,7 @@ include $(TOP)/configure/CONFIG
 # -------------------------------
 
 USR_INCLUDES += $(addprefix -I, $(GLIB_INCLUDE))
-
-#INC += pimegaDetector.h
+USR_INCLUDES += $(addprefix -I, $(PIMEGA_INCLUDE))
 
 LIBRARY_IOC_Linux += pimegaDetector
 
