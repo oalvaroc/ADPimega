@@ -21,12 +21,6 @@ include "ADBase.template"
 # Disable records from ADBase etc. that we do not use for pimega
 ##########################################################################
 
-record(waveform, "$(P)$(R)ArrayData")
-{
-	field(SCAN, "2 second")
-}
-
-
 record(calcout,"$(P)$(R)UpdateScan")
 {
 	field(INPA, "$(P)$(R)Acquire CPP NMS")
@@ -44,18 +38,6 @@ record(dfanout,"$(P)$(R)AcquireCapture")
 {
 	field(OUTA, "$(P)$(R)Acquire PP")
 	field(OUTB, "$(P)$(R)Capture PP")
-}
-
-
-
-record(ao, "$(P)$(R)Gain")
-{
-	#field(DISA, "1")
-}
-
-record(ai, "$(P)$(R)Gain_RBV")
-{
-	#field(DISA, "1")
 }
 
 record(ai, "$(P)$(R)TimeRemaining_RBV")
@@ -93,21 +75,6 @@ record(mbbi,"$(P)$(R)TriggerMode_RBV") {
     field(TWVL,"2")
     field(TWST,"Alignment")	
 }
-
-# Add new items for the ImageMode records defined in ADBase.template
-#record(mbbo,"$(P)$(R)ImageMode") {
-#	field(THST,"Threshold")
-#	field(THVL,"3")
-#	field(FRST,"TestPulse")
-#	field(FRVL,"4")
-#}
-#
-#record(mbbi,"$(P)$(R)ImageMode_RBV") {
-#	field(THST,"Threshold")
-#	field(THVL,"3")
-#	field(FRST,"TestPulse")
-#	field(FRVL,"4")
-#}
 
 record(ao, "$(P)$(R)AcquireTime")
 {
@@ -377,7 +344,6 @@ record(mbbi,"$(P)$(R)GainMode_RBV") {
 record(ao, "$(P)$(R)SenseDacSel")
 {
 	field(DESC, "Select DAC code to be monitored")
-	#field(PINI, "YES")
    	field(DTYP, "asynInt32")
    	field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))SENSE_DAC_SEL")
    	field(VAL,  "0")
@@ -1630,7 +1596,6 @@ record(bo, "$(P)$(R)LoadEqualizationStart") {
 	field(VAL,  "1")
 	field(ZNAM, "Idle")
 	field(ONAM, "Equalize")
-	#field(HIGH, "0.1")
 	field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))LOAD_EQUALIZATION_START")
 }
 
