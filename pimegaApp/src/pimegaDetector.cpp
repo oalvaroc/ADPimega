@@ -150,7 +150,7 @@ void pimegaDetector::acqTask() {
         setDoubleParam(ADTimeRemaining, elapsedTime);
       }
     }
-    eventStatus = epicsEventWaitWithTimeout(this->stopAcquireEventId_, 0);
+    eventStatus = epicsEventTryWait(this->stopAcquireEventId_);
 
     /* Stop event detected */
     if (eventStatus == epicsEventWaitOK) {
@@ -329,7 +329,7 @@ void pimegaDetector::captureTask() {
       capture = 1;
     }
 
-    eventStatus = epicsEventWaitWithTimeout(this->stopCaptureEventId_, 0);
+    eventStatus = epicsEventTryWait(this->stopCaptureEventId_);
 
     /* Stop event detected */
     if (eventStatus == epicsEventWaitOK) {
