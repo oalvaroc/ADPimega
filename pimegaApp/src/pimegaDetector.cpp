@@ -74,6 +74,8 @@ void pimegaDetector::acqTask() {
   bool indexEnableBool;
   const char *functionName = "acqTask";
   int acquireStatusError = 0;
+
+  this->lock();
   /* Loop forever */
   while (true) {
     /* No acquisition in place */
@@ -83,11 +85,14 @@ void pimegaDetector::acqTask() {
       // Release the lock while we wait for an event that says acquire has
       // started, then lock again
       PIMEGA_PRINT(pimega, TRACE_MASK_FLOW, "%s: Waiting for acquire to start\n", functionName);
+      this->unlock();
       status = epicsEventWait(startAcquireEventId_);
       PIMEGA_PRINT(pimega, TRACE_MASK_FLOW, "%s: Acquire request received\n", functionName);
 
       /* We are acquiring. */
       acquireStatusError = 0;
+
+      this->lock();
 
       /* Get the exposure parameters */
       getDoubleParam(ADAcquireTime, &acquireTime);
@@ -105,11 +110,13 @@ void pimegaDetector::acqTask() {
       getParameter(NDFileCapture, &backendStatus);
       status = startAcquire();
       if (status != asynSuccess) {
+        this->unlock();
         PIMEGA_PRINT(pimega, TRACE_MASK_ERROR, "%s: startAcquire() failed. Stop event sent\n",
                      functionName);
         epicsEventSignal(this->stopAcquireEventId_);
         acquireStatusError = 1;
         epicsThreadSleep(.1);
+        this->lock();
       } else {
         acquire = 1;
         PIMEGA_PRINT(pimega, TRACE_MASK_FLOW, "%s: Acquire started\n", functionName);
@@ -173,7 +180,9 @@ void pimegaDetector::acqTask() {
 
     /* Added this delay for the thread not to hog the processor. No need to run
      * on full speed. */
+    this->unlock();
     usleep(1000);
+    this->lock();
 
     /* Will enter here only one time when the acqusition time is over. The
       current configuration assumes that when time is up, the thread goes to
@@ -310,13 +319,17 @@ void pimegaDetector::captureTask() {
   int capture = 0;
   int eventStatus = 0;
   uint64_t recievedBackendCount;
+
+  this->lock();
   /* Loop forever */
   while (true) {
     if (!capture) {
       // Release the lock while we wait for an event that says acquire has
       // started, then lock again
       PIMEGA_PRINT(pimega, TRACE_MASK_FLOW, "%s: Waiting for capture to start\n", __func__);
+      this->unlock();
       status = epicsEventWait(startCaptureEventId_);
+      this->lock();
       PIMEGA_PRINT(pimega, TRACE_MASK_FLOW, "%s: Capture started\n", __func__);
 
       recievedBackendCountOffset = 0;
@@ -333,11 +346,14 @@ void pimegaDetector::captureTask() {
       status = send_stopAcquire_to_backend(pimega);
       status |= abort_save(pimega);
       int counter = -1;
+
+      this->unlock();
       while (counter != 0) {
         get_acqStatus_from_backend(pimega);
         counter = (int)pimega->acq_status_return.STATUS_SAVEDFRAMENUM;
         usleep(1000);
       }
+      this->lock();
 
       if (status != 0) {
         PIMEGA_PRINT(pimega, TRACE_MASK_ERROR, "%s: Failed - %s\n", "send_stopAcquire_to_backend",
@@ -352,6 +368,7 @@ void pimegaDetector::captureTask() {
     }
 
     /* Added this delay for the thread not to hog the processor. */
+    this->unlock();
     usleep(1000);
 
     if (capture) {
@@ -369,8 +386,12 @@ void pimegaDetector::captureTask() {
         recievedBackendCount = (unsigned int)pimega->acquireParam.numCapture;
       }
     }
+
+    this->lock();
     getParameter(NDAutoSave, &autoSave);
     getIntegerParam(PimegaIndexEnable, &indexEnable);
+    this->unlock();
+
     /* Capture and server status message management ( UPDATESERVERSTATUS &&
        NDFileCapture handling )
         - The number of the frontend images may or may not be the same as the
@@ -394,6 +415,7 @@ void pimegaDetector::captureTask() {
       }
     }
 
+    this->lock();
     if (pimega->acquireParam.numCapture != 0 && capture) {
       /* Timer finished and data should have arrived already ( but not
        * necessarily saved ) */
