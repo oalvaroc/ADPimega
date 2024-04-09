@@ -208,8 +208,6 @@ void pimegaDetector::acqTask() {
              for index to receive the images or both */
           if (pimega->acq_status_return.done != DONE_ACQ) {
             UPDATEIOCSTATUS("Not all images received. Waiting");
-          } else if (autoSave == 1 && pimega->acq_status_return.done != DONE_ACQ) {
-            UPDATEIOCSTATUS("Saving images..");
           } else if (indexEnableBool == true &&
                      pimega->acq_status_return.STATUS_INDEXSENTACQUISITIONNUM <
                          (unsigned int)pimega->acquireParam.numCapture) {
