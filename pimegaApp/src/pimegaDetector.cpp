@@ -1952,7 +1952,6 @@ asynStatus pimegaDetector::reset(short action) {
   if (rc != PIMEGA_SUCCESS) rc_aux = rc;
   rc = numExposures(1);
   if (rc != PIMEGA_SUCCESS) rc_aux = rc;
-  setParameter(ADTriggerMode, pimega->trigger_in_enum.PIMEGA_TRIGGER_IN_INTERNAL);
   rc = medipixMode(MODE_B12);
   if (rc != PIMEGA_SUCCESS) rc_aux = rc;
  

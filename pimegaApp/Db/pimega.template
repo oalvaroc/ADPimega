@@ -897,6 +897,13 @@ record(bo, "$(P)$(R)Reset")
 	field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))RESET")
 	field(ZNAM, "Reset and set DACs")
 	field(ONAM, "Reset and Init")
+	field(FLNK, "$(P)$(R)SetTriggerModeInternal_ PP")
+}
+
+record(longout, "$(P)$(R)SetTriggerModeInternal_")
+{
+	field(VAL, "0")
+	field(OUT, "$(P)$(R)TriggerMode PP")
 }
 
 record(ai, "$(P)$(R)DAC_Bias_RBV")
