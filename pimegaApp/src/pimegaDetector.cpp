@@ -104,7 +104,6 @@ void pimegaDetector::acqTask() {
 
       /* Open the shutter */
       setShutter(ADShutterOpen);
-      UPDATEIOCSTATUS("Acquiring");
       setIntegerParam(ADStatus, ADStatusAcquire);
       /* Backend status */
       getParameter(NDFileCapture, &backendStatus);
@@ -119,6 +118,9 @@ void pimegaDetector::acqTask() {
         this->lock();
       } else {
         acquire = 1;
+        UPDATEIOCSTATUS("Acquiring");
+        setIntegerParam(ADAcquire, 1);
+
         PIMEGA_PRINT(pimega, TRACE_MASK_FLOW, "%s: Acquire started\n", functionName);
         /* Get the current time */
         epicsTimeGetCurrent(&startTime);
@@ -493,8 +495,10 @@ asynStatus pimegaDetector::writeInt32(asynUser *pasynUser, epicsInt32 value) {
                    "%s: Requested acquire start event. Sending acquire start "
                    "event signal to thread\n",
                    functionName);
+
       epicsEventSignal(this->startAcquireEventId_);
-      strcat(ok_str, "Acquiring");
+
+      return asynSuccess;
     } else if (!value && (adstatus == ADStatusAcquire || adstatus == ADStatusError)) {
       /* This was a command to stop acquisition */
       PIMEGA_PRINT(pimega, TRACE_MASK_FLOW,
@@ -1667,14 +1671,38 @@ void pimegaDetector::report(FILE *fp, int details) {
   ADDriver::report(fp, details);
 }
 
+asynStatus pimegaDetector::waitForBackendStatus(int status) {
+  while (true) {
+    if (get_acqStatus_from_backend(pimega) != PIMEGA_SUCCESS)
+      return asynError;
+
+    int current_status = pimega->acq_status_return.STATUS_DONE;
+
+    if (current_status == status)
+      break;
+
+    if (current_status == PERMISSION_DENIED)
+      return asynError;
+
+    epicsThreadSleep(0.01);
+  }
+
+  return asynSuccess;
+}
+
 asynStatus pimegaDetector::startAcquire(void) {
   int rc = 0;
   pimega->pimegaParam.software_trigger = false;
   if (BoolAcqResetRDMA) {
     send_allinitArgs_allModules(pimega);
   }
+
+  if (waitForBackendStatus(ACQUIRING) != asynSuccess)
+    return asynError;
+
   rc = execute_acquire(pimega);
   if (rc != PIMEGA_SUCCESS) return asynError;
+
   return asynSuccess;
 }
 
