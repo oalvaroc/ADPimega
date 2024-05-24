@@ -476,12 +476,6 @@ asynStatus pimegaDetector::writeInt32(asynUser *pasynUser, epicsInt32 value) {
   getParameter(NDFileCapture, &backendStatus);
   getParameter(ADAcquire, &acquireRunning);
 
-  createParam(pimegaTraceMaskWarningString, asynParamInt32, &PimegaTraceMaskWarning);
-  createParam(pimegaTraceMaskErrorString, asynParamInt32, &PimegaTraceMaskError);
-  createParam(pimegaTraceMaskDriverIOString, asynParamInt32, &PimegaTraceMaskDriverIO);
-  createParam(pimegaTraceMaskFlowString, asynParamInt32, &PimegaTraceMaskFlow);
-  createParam(pimegaTraceMaskString, asynParamInt32, &PimegaTraceMask);
-
   if (function == PimegaTraceMaskWarning) {
     set_individual_trace_mask(pimega, TRACE_MASK_WARNING, value);
   } else if (function == PimegaTraceMaskError) {
