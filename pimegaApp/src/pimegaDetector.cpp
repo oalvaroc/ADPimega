@@ -347,15 +347,9 @@ void pimegaDetector::captureTask() {
                    __func__);
 
       status = abort_save(pimega);
-      int counter = -1;
 
-      this->unlock();
-      while (counter != 0) {
-        get_acqStatus_from_backend(pimega);
-        counter = (int)pimega->acq_status_return.STATUS_SAVEDFRAMENUM;
-        usleep(1000);
-      }
-      this->lock();
+      // Even if it fails, backend has effectively aborted
+      waitForBackendStatus(DONE_ACQ);
 
       if (status != 0) {
         PIMEGA_PRINT(pimega, TRACE_MASK_ERROR, "%s: Failed - %s\n", "send_stopAcquire_to_backend",
@@ -365,6 +359,10 @@ void pimegaDetector::captureTask() {
       } else {
         capture = 0;
         UPDATESERVERSTATUS("Backend stopped");
+
+        setIntegerParam(NDFileCapture, 0);
+        callParamCallbacks();
+
         continue;
       }
     }
@@ -571,10 +569,15 @@ asynStatus pimegaDetector::writeInt32(asynUser *pasynUser, epicsInt32 value) {
                      "%s: Requested capture stop event. Sending capture stop "
                      "event signal to thread\n",
                      functionName);
+
         epicsEventSignal(this->stopCaptureEventId_);
-        epicsThreadSleep(.1);
+
+        UPDATEIOCSTATUS("Acquisition stopped");
+
         setDoubleParam(ADTimeRemaining, 0);
-        strcat(ok_str, "Acquisition stopped");
+        callParamCallbacks();
+
+        return asynSuccess;
       } else {
         PIMEGA_PRINT(pimega, TRACE_MASK_ERROR, "%s: Backend already stopped. Sending asynError\n",
                      functionName);
