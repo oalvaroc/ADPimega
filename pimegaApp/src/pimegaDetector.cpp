@@ -1771,6 +1771,9 @@ asynStatus pimegaDetector::startCaptureBackend(void) {
     return asynError;
   }
 
+  if (waitForBackendStatus(ACQUIRING) != asynSuccess)
+    return asynError;
+
   UPDATESERVERSTATUS("Backend Ready");
 
   return asynSuccess;
