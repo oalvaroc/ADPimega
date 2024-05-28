@@ -448,6 +448,7 @@ class pimegaDetector : public ADDriver {
   asynStatus getMedipixTemperatures(void);
   asynStatus getMedipixAvgTemperature(void);
   asynStatus startAcquire(void);
+  asynStatus stopAcquire();
   asynStatus startCaptureBackend(void);
   asynStatus waitForBackendStatus(int);
 

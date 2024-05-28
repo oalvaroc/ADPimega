@@ -163,6 +163,8 @@ void pimegaDetector::acqTask() {
       PIMEGA_PRINT(pimega, TRACE_MASK_FLOW, "%s: Stop acquire request received in thread\n",
                    functionName);
 
+      stopAcquire();
+
       setShutter(0);
       setIntegerParam(ADAcquire, 0);
       acquire = 0;
@@ -343,9 +345,8 @@ void pimegaDetector::captureTask() {
     if (eventStatus == epicsEventWaitOK) {
       PIMEGA_PRINT(pimega, TRACE_MASK_FLOW, "%s: Capture Stop request received in thread\n",
                    __func__);
-      stop_acquire(pimega);
-      status = send_stopAcquire_to_backend(pimega);
-      status |= abort_save(pimega);
+
+      status = abort_save(pimega);
       int counter = -1;
 
       this->unlock();
@@ -500,14 +501,14 @@ asynStatus pimegaDetector::writeInt32(asynUser *pasynUser, epicsInt32 value) {
 
       return asynSuccess;
     } else if (!value && (adstatus == ADStatusAcquire || adstatus == ADStatusError)) {
-      /* This was a command to stop acquisition */
       PIMEGA_PRINT(pimega, TRACE_MASK_FLOW,
                    "%s: Requested acquire stop event. Sending acquire stop "
                    "event signal to thread\n",
                    functionName);
       epicsEventSignal(this->stopAcquireEventId_);
-      epicsThreadSleep(.1);
-      strcat(ok_str, "Stopping acquisition");
+      UPDATEIOCSTATUS("Stopping acquisition");
+
+      return asynSuccess;
     } else {
       PIMEGA_PRINT(
           pimega, TRACE_MASK_ERROR, "%s: value=%d, adstatus=%s(%d), backendStatus=%d\n",
@@ -1702,6 +1703,18 @@ asynStatus pimegaDetector::startAcquire(void) {
 
   rc = execute_acquire(pimega);
   if (rc != PIMEGA_SUCCESS) return asynError;
+
+  return asynSuccess;
+}
+
+asynStatus pimegaDetector::stopAcquire() {
+  stop_acquire(pimega);
+
+  if (send_stopAcquire_to_backend(pimega) != PIMEGA_SUCCESS)
+    return asynError;
+
+  if (waitForBackendStatus(DONE_ACQ) != asynSuccess)
+    return asynError;
 
   return asynSuccess;
 }
