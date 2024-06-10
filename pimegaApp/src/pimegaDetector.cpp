@@ -1298,7 +1298,7 @@ void pimegaDetector::connect(const char *address[10], unsigned short port,
 
   char connection_address[1024];
   sprintf(connection_address, "tcp://127.0.0.1:%d", vis_frame_port);
-  const std::string visualizer_topic = "pimega_frame_visualizer";
+  const std::string visualizer_topic = "";
   const size_t max_frame_size = maxSizeX * maxSizeY * sizeof(vis_dtype);
   message_consumer = new ZmqMessageConsumer(
           connection_address,
