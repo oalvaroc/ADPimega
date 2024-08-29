@@ -134,9 +134,6 @@ void pimegaDetector::acqTask() {
     /* will enter here when the detector did not finish acquisition
       (acquireStatus != DONE_ACQ) or when Elapsed time is chosen
       (!pimega->trigger_in_enum.PIMEGA_TRIGGER_IN_INTERNAL) */
-    if (acquireStatus == PERMISSION_DENIED) {
-      UPDATEIOCSTATUS("Permission Denied, press stop");
-    }
     if (acquire && (acquireStatus != DONE_ACQ || acquireStatus != PERMISSION_DENIED ||
                     triggerMode != pimega->trigger_in_enum.PIMEGA_TRIGGER_IN_INTERNAL)) {
       epicsTimeGetCurrent(&endTime);
@@ -1774,8 +1771,23 @@ asynStatus pimegaDetector::startCaptureBackend(void) {
     return asynError;
   }
 
-  if (waitForBackendStatus(ACQUIRING) != asynSuccess)
+  if (waitForBackendStatus(ACQUIRING) != asynSuccess) {
+    UPDATEIOCSTATUS("Could not start acquisition");
+
+    if (get_acqStatus_from_backend(pimega) != PIMEGA_SUCCESS)
+      return asynError;
+
+    auto current_status = pimega->acq_status_return.STATUS_DONE;
+
+    if (current_status == PERMISSION_DENIED) {
+      UPDATESERVERSTATUS("Permission denied to open file");
+
+      send_stopAcquire_to_backend(pimega);
+      waitForBackendStatus(DONE_ACQ);
+    }
+
     return asynError;
+  }
 
   UPDATESERVERSTATUS("Backend Ready");
 
