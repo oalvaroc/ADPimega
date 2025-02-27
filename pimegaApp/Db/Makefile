@@ -11,8 +11,16 @@ include $(TOP)/configure/CONFIG
 # Create and install (or just install)
 # databases, templates, substitutions like this
 
+DB += module.template
 DB += pimega.template
 DB += NDFile.template
+
+DB += pimega45d.db
+DB += pimega135dl.db
+DB += pimega135d.db
+DB += pimega540d.db
+DB += pimega450d.db
+DB += pimega450ds.db
 
 #----------------------------------------------------
 # If <anyname>.db template is not named <anyname>*.template add
