@@ -1,0 +1,103 @@
+#=================================================================#
+# Template file: module.template
+# Database for PIMEGA module-based records
+
+record(waveform, "$(P)$(R)$(MODULE)MB_Temperature_RBV") {
+   field(DESC, "All temperatures on MB sensors")
+   field(NELM, "48")
+   field(FTVL, "FLOAT")
+   field(DTYP, "asynFloat32ArrayIn")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MODULE_MB_TEMPERATURE")
+   field(SCAN, "I/O Intr")
+   field(PREC, "2")
+}
+
+record(ai,"$(P)$(R)$(MODULE)MB_AvgTemperature_RBV") {
+   field(DESC, "MFB average temperature")
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MODULE_MB_AVG_TSENSOR")
+   field(SCAN, "I/O Intr")
+   field(PREC, "2")
+   field(EGU, "°C")
+}
+
+record(waveform, "$(P)$(R)$(MODULE)Sensor_Temperature_RBV") {
+   field(DESC, "All sensors temperatures")
+   field(NELM, "36")
+   field(FTVL, "FLOAT")
+   field(DTYP, "asynFloat32ArrayIn")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MODULE_SENSOR_TEMPERATURE")
+   field(SCAN, "I/O Intr")
+   field(PREC, "2")
+}
+
+record(ai,"$(P)$(R)$(MODULE)Medipix_AvgTemperature_RBV") {
+   field(DESC, "Medipix average temperature")
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MODULE_MP_AVG_TSENSOR")
+   field(SCAN, "I/O Intr")
+   field(PREC, "2")
+   field(EGU, "°C")
+}
+
+#each status controls a bit, thus using values 0, 1, 2, 4
+record(mbbi,"$(P)$(R)$(MODULE)Temperature_Status") {
+   field(DESC, "Medipix board temperature status")
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MODULE_TEMP_STATUS")
+   field(ZRST, "No Support")
+   field(ZRVL, "0")
+   field(ONST, "Normal")
+   field(ONVL, "1")
+   field(TWST, "Warning")
+   field(TWVL, "2")
+   field(FRST, "Critical")
+   field(FRVL, "4")
+   field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)$(MODULE)Highest_Temperature") {
+   field(DESC, "Medipix board highest temperature")
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MODULE_TEMP_HIGHEST")
+   field(SCAN, "I/O Intr")
+   field(PREC, "2")
+   field(EGU, "°C")
+}
+
+record(longin, "$(P)$(R)$(MODULE)RxError_RBV") {
+   field(DESC, "Module reception error count")
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MODULE_RX_ERROR")
+   field(SCAN, "I/O Intr")
+}
+
+record(longin, "$(P)$(R)$(MODULE)LostFrameCount_RBV") {
+   field(DESC, "Module lost frame count")
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MODULE_LOST_FRAME_COUNT")
+   field(SCAN, "I/O Intr")
+}
+
+record(longin, "$(P)$(R)$(MODULE)RxFrameCount_RBV") {
+   field(DESC, "Module received frame count")
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MODULE_RECEIVED_FRAME_COUNT")
+   field(SCAN, "I/O Intr")
+}
+
+record(longin, "$(P)$(R)$(MODULE)RxAcquisitionCount_RBV") {
+   field(DESC, "Module received acquisition count")
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MODULE_RECEIVED_ACQUISITION_COUNT")
+   field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)$(MODULE)Backend_BufferUsed_RBV") {
+   field(DESC, "Backend RDMA buffer usage")
+   field(DTYP, "asynFloat64")
+   field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))MODULE_RDMA_BUFFER")
+   field(SCAN, "I/O Intr")
+   field(PREC, "1")
+   field(EGU, "%")
+}
