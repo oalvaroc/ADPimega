@@ -1,4 +1,3 @@
-#!../../bin/linux-x86_64/pimegaApp
 < envPaths
 
 errlogInit(20000)
