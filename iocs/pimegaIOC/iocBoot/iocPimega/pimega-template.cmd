@@ -55,8 +55,6 @@ dbLoadRecords("$(ADCORE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=I
 
 # Load all other plugins using commonPlugins.cmd
 < commonPlugins.cmd
-set_requestfile_path("$(ADPIMEGA)/pimegaApp/Db")
-
 
 iocInit()
 
@@ -68,6 +66,3 @@ dbpf(${PREFIX}cam1:ImgChipNumberID, 1)
 dbpf(${PREFIX}image1:EnableCallbacks, 1)
 #dbpf(${PREFIX}Stats2:EnableCallbacks, 1)
 dbpf(${PREFIX}cam1:LoadEqualization, 60)
-# save things every thirty seconds
-#create_monitor_set("auto_settings.req", 30,"P=$(PREFIX)")
-

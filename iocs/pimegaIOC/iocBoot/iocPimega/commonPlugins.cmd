@@ -166,12 +166,3 @@ dbLoadRecords("NDFFT.template", "P=$(PREFIX), R=FFT1:, PORT=FFT1, ADDR=0, TIMEOU
 # Configure NDSSCPimega for geometric restauration
 NDSSCPimegaConfigure("SSCPimega1", "$(QSIZE)", 0, "$(PORT)", 0, 0, 0)
 dbLoadRecords("$(NDSSCPIMEGA)/db/NDSSCPimega.template", "P=$(PREFIX), R=SSCPimega1:, PORT=SSCPimega1, ADDR=0, TIMEOUT=1, NDARRAY_PORT=$(PORT)")
-
-#set_requestfile_path("./")
-#set_requestfile_path("$(ADCORE)/ADApp/Db")
-#set_requestfile_path("$(ADCORE)/iocBoot")
-#set_savefile_path("./autosave")
-#set_pass0_restoreFile("auto_settings.sav")
-#set_pass1_restoreFile("auto_settings.sav")
-#save_restoreSet_status_prefix("$(PREFIX)")
-#dbLoadRecords("$(AUTOSAVE)/asApp/Db/save_restoreStatus.db", "P=$(PREFIX)")
