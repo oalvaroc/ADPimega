@@ -16,6 +16,8 @@ epicsEnvSet("PIMEGA_PORT", "60000")
 epicsEnvSet("FRAME_PORT", "6464")
 epicsEnvSet("COMMAND_PORT", "5412")
 
+epicsEnvSet("CALIBRATION_FILE", "/usr/local/etc/adpimega/pimega540d.ini")
+
 #ABOUT PLUGINS
 # The maximim image width; used for row profiles in the NDPluginStats plugin
 epicsEnvSet("XSIZE",  "3072")
