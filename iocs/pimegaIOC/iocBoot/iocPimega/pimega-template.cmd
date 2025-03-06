@@ -39,5 +39,3 @@ dbLoadRecords("$(ADPIMEGA)/db/NDFile.template","P=$(PREFIX),R=cam1:,PORT=$(PORT)
 # Load asynRecord record
 dbLoadRecords("$(ASYN)/db/asynRecord.db", "P=${PREFIX}, R=asyn1,PORT=$(PORT),ADDR=0,OMAX=256,IMAX=256")
 asynSetTraceMask($(PORT), 0, 0x00)
-
-< plugins.cmd

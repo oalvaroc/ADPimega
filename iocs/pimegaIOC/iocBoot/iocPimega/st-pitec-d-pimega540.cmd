@@ -23,11 +23,13 @@ epicsEnvSet("COMMAND_PORT", "5412")
 
 epicsEnvSet("CALIBRATION_FILE", "/usr/local/etc/adpimega/pimega540d.ini")
 
+< pimega-template.cmd
+
 #ABOUT PLUGINS
 # Number of Elements. Should be at least X*Y
 epicsEnvSet("NELEMENTS", "9437184")
 
-< pimega-template.cmd
+< plugins.cmd
 
 iocInit()
 
