@@ -47,11 +47,6 @@ dbLoadRecords("$(ADPIMEGA)/db/NDFile.template","P=$(PREFIX),R=cam1:,PORT=$(PORT)
 dbLoadRecords("$(ASYN)/db/asynRecord.db", "P=${PREFIX}, R=asyn1,PORT=$(PORT),ADDR=0,OMAX=256,IMAX=256")
 asynSetTraceMask($(PORT), 0, 0x00)
 
-# Create a standard arrays plugin, set it to get data from pimega driver.
-NDStdArraysConfigure("Image1", "$(QSIZE)", 0, "$(PORT)", 0, 0)
-
-dbLoadRecords("$(ADCORE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),TYPE=Int32,FTVL=LONG,NELEMENTS=$(NELEMENTS)")
-
 < plugins.cmd
 
 iocInit()

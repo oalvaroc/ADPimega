@@ -8,9 +8,14 @@
 # $(XSIZE)       The maximum image width; used to set the maximum size for row profiles in the NDPluginStats plugin and 1-D FFT
 #                   profiles in NDPluginFFT.
 # $(YSIZE)       The maximum image height; used to set the maximum size for column profiles in the NDPluginStats plugin
+# $(NELEMENTS)   Maximum number of elements in the resulting image
 # $(NCHANS)      The maximum number of time series points in the NDPluginStats, NDPluginROIStats, and NDPluginAttribute plugins
 # $(CBUFFS)      The maximum number of frames buffered in the NDPluginCircularBuff plugin
 # $(MAX_THREADS) The maximum number of threads for plugins which can run in multiple threads. Defaults to 5.
+
+# Create a standard arrays plugin, set it to get data from pimega driver.
+NDStdArraysConfigure("Image1", "$(QSIZE)", 0, "$(PORT)", 0, 0)
+dbLoadRecords("$(ADCORE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),TYPE=Int32,FTVL=LONG,NELEMENTS=$(NELEMENTS)")
 
 # Create an HDF5 file saving plugin
 NDFileHDF5Configure("FileHDF1", $(QSIZE), 0, "$(PORT)", 0)
