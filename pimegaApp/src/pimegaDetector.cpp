@@ -1038,11 +1038,13 @@ asynStatus pimegaDetector::readInt32(asynUser *pasynUser, epicsInt32 *value) {
   getParameter(ADAcquire, &acquireRunning);
   getParameter(NDAutoSave, &autoSave);
 
+  const auto &acq_status = pimega->acq_status_return;
+
   if (function == PimegaBackendStats) {
-    if (pimega->acq_status_return.STATUS_MODULEERROR[0] == 1 ||
-        pimega->acq_status_return.STATUS_MODULEERROR[1] == 1 ||
-        pimega->acq_status_return.STATUS_MODULEERROR[2] == 1 ||
-        pimega->acq_status_return.STATUS_MODULEERROR[3] == 1)
+    if (acq_status.STATUS_MODULEERROR[0] == 1 ||
+        acq_status.STATUS_MODULEERROR[1] == 1 ||
+        acq_status.STATUS_MODULEERROR[2] == 1 ||
+        acq_status.STATUS_MODULEERROR[3] == 1)
       error = 1;
     else
       error = 0;
@@ -1050,48 +1052,48 @@ asynStatus pimegaDetector::readInt32(asynUser *pasynUser, epicsInt32 *value) {
     received_acq = 0;
     for (int module = 0; module < pimega->max_num_modules; module++) {
       if (received_acq == 0 ||
-          (int)pimega->acq_status_return.STATUS_NOOFACQUISITIONS[module] > received_acq) {
-        received_acq = (int)pimega->acq_status_return.STATUS_NOOFACQUISITIONS[module];
-        if (received_acq < (int)pimega->acq_status_return.processedImageNum) {
-          received_acq = (int)pimega->acq_status_return.processedImageNum;
+          (int)acq_status.STATUS_NOOFACQUISITIONS[module] > received_acq) {
+        received_acq = (int)acq_status.STATUS_NOOFACQUISITIONS[module];
+        if (received_acq < (int)acq_status.processedImageNum) {
+          received_acq = (int)acq_status.processedImageNum;
         }
       }
     }
 
     setParameter(PimegaReceiveError, error);
-    setParameter(PimegaM1ReceiveError, (int)pimega->acq_status_return.STATUS_MODULEERROR[0]);
-    setParameter(PimegaM2ReceiveError, (int)pimega->acq_status_return.STATUS_MODULEERROR[1]);
-    setParameter(PimegaM3ReceiveError, (int)pimega->acq_status_return.STATUS_MODULEERROR[2]);
-    setParameter(PimegaM4ReceiveError, (int)pimega->acq_status_return.STATUS_MODULEERROR[3]);
-    setParameter(PimegaM1LostFrameCount, (int)pimega->acq_status_return.STATUS_LOSTFRAMECNT[0]);
-    setParameter(PimegaM2LostFrameCount, (int)pimega->acq_status_return.STATUS_LOSTFRAMECNT[1]);
-    setParameter(PimegaM3LostFrameCount, (int)pimega->acq_status_return.STATUS_LOSTFRAMECNT[2]);
-    setParameter(PimegaM4LostFrameCount, (int)pimega->acq_status_return.STATUS_LOSTFRAMECNT[3]);
-    setParameter(PimegaM1RxFrameCount, (int)pimega->acq_status_return.STATUS_NOOFFRAMES[0]);
-    setParameter(PimegaM2RxFrameCount, (int)pimega->acq_status_return.STATUS_NOOFFRAMES[1]);
-    setParameter(PimegaM3RxFrameCount, (int)pimega->acq_status_return.STATUS_NOOFFRAMES[2]);
-    setParameter(PimegaM4RxFrameCount, (int)pimega->acq_status_return.STATUS_NOOFFRAMES[3]);
+    setParameter(PimegaM1ReceiveError, (int)acq_status.STATUS_MODULEERROR[0]);
+    setParameter(PimegaM2ReceiveError, (int)acq_status.STATUS_MODULEERROR[1]);
+    setParameter(PimegaM3ReceiveError, (int)acq_status.STATUS_MODULEERROR[2]);
+    setParameter(PimegaM4ReceiveError, (int)acq_status.STATUS_MODULEERROR[3]);
+    setParameter(PimegaM1LostFrameCount, (int)acq_status.STATUS_LOSTFRAMECNT[0]);
+    setParameter(PimegaM2LostFrameCount, (int)acq_status.STATUS_LOSTFRAMECNT[1]);
+    setParameter(PimegaM3LostFrameCount, (int)acq_status.STATUS_LOSTFRAMECNT[2]);
+    setParameter(PimegaM4LostFrameCount, (int)acq_status.STATUS_LOSTFRAMECNT[3]);
+    setParameter(PimegaM1RxFrameCount, (int)acq_status.STATUS_NOOFFRAMES[0]);
+    setParameter(PimegaM2RxFrameCount, (int)acq_status.STATUS_NOOFFRAMES[1]);
+    setParameter(PimegaM3RxFrameCount, (int)acq_status.STATUS_NOOFFRAMES[2]);
+    setParameter(PimegaM4RxFrameCount, (int)acq_status.STATUS_NOOFFRAMES[3]);
     setParameter(PimegaM1AquisitionCount,
-                 (int)pimega->acq_status_return.STATUS_NOOFACQUISITIONS[0]);
+                 (int)acq_status.STATUS_NOOFACQUISITIONS[0]);
     setParameter(PimegaM2AquisitionCount,
-                 (int)pimega->acq_status_return.STATUS_NOOFACQUISITIONS[1]);
+                 (int)acq_status.STATUS_NOOFACQUISITIONS[1]);
     setParameter(PimegaM3AquisitionCount,
-                 (int)pimega->acq_status_return.STATUS_NOOFACQUISITIONS[2]);
+                 (int)acq_status.STATUS_NOOFACQUISITIONS[2]);
     setParameter(PimegaM4AquisitionCount,
-                 (int)pimega->acq_status_return.STATUS_NOOFACQUISITIONS[3]);
+                 (int)acq_status.STATUS_NOOFACQUISITIONS[3]);
     setParameter(PimegaM1RdmaBufferUsage,
-                 (double)pimega->acq_status_return.STATUS_BUFFERUSED[0] * 100);
+                 (double)acq_status.STATUS_BUFFERUSED[0] * 100);
     setParameter(PimegaM2RdmaBufferUsage,
-                 (double)pimega->acq_status_return.STATUS_BUFFERUSED[1] * 100);
+                 (double)acq_status.STATUS_BUFFERUSED[1] * 100);
     setParameter(PimegaM3RdmaBufferUsage,
-                 (double)pimega->acq_status_return.STATUS_BUFFERUSED[2] * 100);
+                 (double)acq_status.STATUS_BUFFERUSED[2] * 100);
     setParameter(PimegaM4RdmaBufferUsage,
-                 (double)pimega->acq_status_return.STATUS_BUFFERUSED[3] * 100);
-    setParameter(PimegaIndexError, (int)pimega->acq_status_return.STATUS_INDEXERROR);
-    setParameter(PimegaIndexCounter, (int)pimega->acq_status_return.STATUS_INDEXSENTACQUISITIONNUM);
+                 (double)acq_status.STATUS_BUFFERUSED[3] * 100);
+    setParameter(PimegaIndexError, (int)acq_status.STATUS_INDEXERROR);
+    setParameter(PimegaIndexCounter, (int)acq_status.STATUS_INDEXSENTACQUISITIONNUM);
     setParameter(ADNumImagesCounter, received_acq);
-    setParameter(PimegaProcessedImageCounter, (int)pimega->acq_status_return.processedImageNum);
-    setParameter(NDFileNumCaptured, (int)pimega->acq_status_return.STATUS_SAVEDFRAMENUM);
+    setParameter(PimegaProcessedImageCounter, (int)acq_status.processedImageNum);
+    setParameter(NDFileNumCaptured, (int)acq_status.STATUS_SAVEDFRAMENUM);
     callParamCallbacks();
   } else if (function == PimegaModule) {
     *value = pimega->pimega_module;
