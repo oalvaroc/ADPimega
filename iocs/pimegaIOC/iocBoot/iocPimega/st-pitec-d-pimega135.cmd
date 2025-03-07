@@ -24,3 +24,7 @@ epicsEnvSet("YSIZE",  "1536")
 epicsEnvSet("NELEMENTS", "2359296")
 
 < pimega-template.cmd
+
+iocInit()
+
+< post-init.cmd

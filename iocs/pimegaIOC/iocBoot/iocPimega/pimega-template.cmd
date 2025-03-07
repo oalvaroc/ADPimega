@@ -48,7 +48,3 @@ dbLoadRecords("$(ASYN)/db/asynRecord.db", "P=${PREFIX}, R=asyn1,PORT=$(PORT),ADD
 asynSetTraceMask($(PORT), 0, 0x00)
 
 < plugins.cmd
-
-iocInit()
-
-< post-init.cmd
