@@ -21,6 +21,4 @@ epicsEnvSet("YSIZE",  "1536")
 # Number of Elements. Should be at least X*Y
 epicsEnvSet("NELEMENTS", "2359296")
 
-epicsEnvSet("EPICS_CA_MAX_ARRAY_BYTES", "9500000")
-
 < pimega-template.cmd
