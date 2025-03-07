@@ -1315,24 +1315,24 @@ void pimegaDetector::connect(const char *address[10], unsigned short port,
   if (rc != PIMEGA_SUCCESS) panic("Unable to connect with detector. Aborting");
 }
 
-void pimegaDetector::setParameter(int index, const char *value) {
+void pimegaDetector::setParameter(int index, const char *value, int address) {
   asynStatus status;
 
-  status = setStringParam(index, value);
+  status = setStringParam(address, index, value);
   if (status != asynSuccess) panic("setParameter failed.");
 }
 
-void pimegaDetector::setParameter(int index, int value) {
+void pimegaDetector::setParameter(int index, int value, int address) {
   asynStatus status;
 
-  status = setIntegerParam(index, value);
+  status = setIntegerParam(address, index, value);
   if (status != asynSuccess) panic("setParameter failed.");
 }
 
-void pimegaDetector::setParameter(int index, double value) {
+void pimegaDetector::setParameter(int index, double value, int address) {
   asynStatus status;
 
-  status = setDoubleParam(index, value);
+  status = setDoubleParam(address, index, value);
   if (status != asynSuccess) panic("setParameter failed.");
 }
 

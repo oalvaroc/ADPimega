@@ -433,9 +433,9 @@ class pimegaDetector : public ADDriver {
   void connect(const char *address[4], unsigned short port,
           unsigned short backend_port, unsigned short vis_frame_port);
   void createParameters(void);
-  void setParameter(int index, const char *value);
-  void setParameter(int index, int value);
-  void setParameter(int index, double value);
+  void setParameter(int index, const char *value, int address = 0);
+  void setParameter(int index, int value, int address = 0);
+  void setParameter(int index, double value, int address = 0);
   void getParameter(int index, int maxChars, char *value);
   void getParameter(int index, int *value);
   void getParameter(int index, double *value);
