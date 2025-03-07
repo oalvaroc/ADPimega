@@ -144,37 +144,16 @@ typedef enum ioc_trigger_mode_t {
 #define pimegaExtBgSelString "EXT_BGSEL"
 #define pimegaReadMBTemperatureString "READ_MB_TEMPERATURE"
 #define pimegaTempMonitorEnableString "TEMP_MONITOR_ENABLE"
-#define pimegaM1TempStatusString "TEMP_STATUS_M1"
-#define pimegaM2TempStatusString "TEMP_STATUS_M2"
-#define pimegaM3TempStatusString "TEMP_STATUS_M3"
-#define pimegaM4TempStatusString "TEMP_STATUS_M4"
-#define pimegaM1TempHighestString "TEMP_HIGHEST_M1"
-#define pimegaM2TempHighestString "TEMP_HIGHEST_M2"
-#define pimegaM3TempHighestString "TEMP_HIGHEST_M3"
-#define pimegaM4TempHighestString "TEMP_HIGHEST_M4"
-#define pimegaMbM1TempString "MB_TEMPERATURE_M1"
-#define pimegaMbM2TempString "MB_TEMPERATURE_M2"
-#define pimegaMbM3TempString "MB_TEMPERATURE_M3"
-#define pimegaMbM4TempString "MB_TEMPERATURE_M4"
-#define pimegaSensorM1TempString "SENSOR_TEMPERATURE_M1"
-#define pimegaSensorM2TempString "SENSOR_TEMPERATURE_M2"
-#define pimegaSensorM3TempString "SENSOR_TEMPERATURE_M3"
-#define pimegaSensorM4TempString "SENSOR_TEMPERATURE_M4"
-#define pimegaMBAvgM1String "MB_AVG_TSENSOR_M1"
-#define pimegaMBAvgM2String "MB_AVG_TSENSOR_M2"
-#define pimegaMBAvgM3String "MB_AVG_TSENSOR_M3"
-#define pimegaMBAvgM4String "MB_AVG_TSENSOR_M4"
+#define pimegaModuleTempStatusString "MODULE_TEMP_STATUS"
+#define pimegaModuleTempHighestString "MODULE_TEMP_HIGHEST"
+#define pimegaModuleMbTempString "MODULE_MB_TEMPERATURE"
+#define pimegaModuleSensorTempString "MODULE_SENSOR_TEMPERATURE"
+#define pimegaModuleMBAvgString "MODULE_MB_AVG_TSENSOR"
 #define pimegaReadSensorTemperatureString "READ_SENSOR_TEMPERATURE"
-#define pimegaMPAvgM1String "MP_AVG_TSENSOR_M1"
-#define pimegaMPAvgM2String "MP_AVG_TSENSOR_M2"
-#define pimegaMPAvgM3String "MP_AVG_TSENSOR_M3"
-#define pimegaMPAvgM4String "MP_AVG_TSENSOR_M4"
+#define pimegaModuleMPAvgString "MODULE_MP_AVG_TSENSOR"
 #define pimegaDacDefaultsString "DAC_DEFAULTS"
 #define pimegaCheckSensorsString "CHECK_SENSORS"
-#define pimegaDisabledSensorsM1String "DISABLED_SENSORS_M1"
-#define pimegaDisabledSensorsM2String "DISABLED_SENSORS_M2"
-#define pimegaDisabledSensorsM3String "DISABLED_SENSORS_M3"
-#define pimegaDisabledSensorsM4String "DISABLED_SENSORS_M4"
+#define pimegaModuleDisabledSensorsString "MODULE_DISABLED_SENSORS"
 #define pimegaMBSendModeString "MB_SEND_MODE"
 #define pimegaEnableBulkProcessingString "ENABLE_BULK_PROCESSING"
 #define pimegaAbortSaveString "ABORT_SAVE"
@@ -195,26 +174,11 @@ typedef enum ioc_trigger_mode_t {
 #define pimegaTraceMaskString "TRACE_MASK"
 #define pimegaReceiveErrorString "RX_ERROR"
 #define pimegaIndexErrorString "INDEX_ERROR"
-#define pimegaM1ReceiveErrorString "M1_RX_ERROR"
-#define pimegaM2ReceiveErrorString "M2_RX_ERROR"
-#define pimegaM3ReceiveErrorString "M3_RX_ERROR"
-#define pimegaM4ReceiveErrorString "M4_RX_ERROR"
-#define pimegaM1LostFrameCountString "M1_LOST_FRAME_COUNT"
-#define pimegaM2LostFrameCountString "M2_LOST_FRAME_COUNT"
-#define pimegaM3LostFrameCountString "M3_LOST_FRAME_COUNT"
-#define pimegaM4LostFrameCountString "M4_LOST_FRAME_COUNT"
-#define pimegaM1RxFrameCountString "M1_RECEIVED_FRAME_COUNT"
-#define pimegaM2RxFrameCountString "M2_RECEIVED_FRAME_COUNT"
-#define pimegaM3RxFrameCountString "M3_RECEIVED_FRAME_COUNT"
-#define pimegaM4RxFrameCountString "M4_RECEIVED_FRAME_COUNT"
-#define pimegaM1AquisitionCountString "M1_RECEIVED_ACQUISITION_COUNT"
-#define pimegaM2AquisitionCountString "M2_RECEIVED_ACQUISITION_COUNT"
-#define pimegaM3AquisitionCountString "M3_RECEIVED_ACQUISITION_COUNT"
-#define pimegaM4AquisitionCountString "M4_RECEIVED_ACQUISITION_COUNT"
-#define pimegaM1RdmaBufferUsageString "M1_RDMA_BUFFER"
-#define pimegaM2RdmaBufferUsageString "M2_RDMA_BUFFER"
-#define pimegaM3RdmaBufferUsageString "M3_RDMA_BUFFER"
-#define pimegaM4RdmaBufferUsageString "M4_RDMA_BUFFER"
+#define pimegaModuleReceiveErrorString "MODULE_RX_ERROR"
+#define pimegaModuleLostFrameCountString "MODULE_LOST_FRAME_COUNT"
+#define pimegaModuleRxFrameCountString "MODULE_RECEIVED_FRAME_COUNT"
+#define pimegaModuleAcquisitionCountString "MODULE_RECEIVED_ACQUISITION_COUNT"
+#define pimegaModuleRdmaBufferUsageString "MODULE_RDMA_BUFFER"
 #define pimegaBackendStatsString "BACKEND_STATS"
 #define pimegaMetadataFieldString "METADATA_FIELD"
 #define pimegaMetadataValueString "METADATA_VALUE"
@@ -314,40 +278,19 @@ class pimegaDetector : public ADDriver {
   int PimegaExtBgSel;
   int PimegaReadMBTemperature;
   int PimegaTempMonitorEnable;
-  int PimegaTemperatureStatusM1;
-  int PimegaTemperatureStatusM2;
-  int PimegaTemperatureStatusM3;
-  int PimegaTemperatureStatusM4;
-  int PimegaTemperatureHighestM1;
-  int PimegaTemperatureHighestM2;
-  int PimegaTemperatureHighestM3;
-  int PimegaTemperatureHighestM4;
-  int PimegaMBTemperatureM1;
-  int PimegaMBTemperatureM2;
-  int PimegaMBTemperatureM3;
-  int PimegaMBTemperatureM4;
-  int PimegaMBAvgTSensorM1;
-  int PimegaMBAvgTSensorM2;
-  int PimegaMBAvgTSensorM3;
-  int PimegaMBAvgTSensorM4;
+  int PimegaModuleTemperatureStatus;
+  int PimegaModuleTemperatureHighest;
+  int PimegaModuleMBTemperature;
+  int PimegaModuleMBAvgTSensor;
   int PimegaMBSelTSensor;
   int PimegaMBTSensor;
   int PimegaAcqShmemEnable;
   int PimegaReadSensorTemperature;
-  int PimegaSensorTemperatureM1;
-  int PimegaSensorTemperatureM2;
-  int PimegaSensorTemperatureM3;
-  int PimegaSensorTemperatureM4;
-  int PimegaMPAvgTSensorM1;
-  int PimegaMPAvgTSensorM2;
-  int PimegaMPAvgTSensorM3;
-  int PimegaMPAvgTSensorM4;
+  int PimegaModuleSensorTemperature;
+  int PimegaModuleMPAvgTSensor;
   int pimegaDacDefaults;
   int PimegaCheckSensors;
-  int PimegaDisabledSensorsM1;
-  int PimegaDisabledSensorsM2;
-  int PimegaDisabledSensorsM3;
-  int PimegaDisabledSensorsM4;
+  int PimegaModuleDisabledSensors;
   int PimegaMBSendMode;
   int PimegaSensorBias;
   int PimegaEnergy;
@@ -368,26 +311,11 @@ class pimegaDetector : public ADDriver {
   int PimegaTraceMask;
   int PimegaTraceMaskFlow;
   int PimegaReceiveError;
-  int PimegaM1ReceiveError;
-  int PimegaM2ReceiveError;
-  int PimegaM3ReceiveError;
-  int PimegaM4ReceiveError;
-  int PimegaM1LostFrameCount;
-  int PimegaM2LostFrameCount;
-  int PimegaM3LostFrameCount;
-  int PimegaM4LostFrameCount;
-  int PimegaM1RxFrameCount;
-  int PimegaM2RxFrameCount;
-  int PimegaM3RxFrameCount;
-  int PimegaM4RxFrameCount;
-  int PimegaM1AquisitionCount;
-  int PimegaM2AquisitionCount;
-  int PimegaM3AquisitionCount;
-  int PimegaM4AquisitionCount;
-  int PimegaM1RdmaBufferUsage;
-  int PimegaM2RdmaBufferUsage;
-  int PimegaM3RdmaBufferUsage;
-  int PimegaM4RdmaBufferUsage;
+  int PimegaModuleReceiveError;
+  int PimegaModuleLostFrameCount;
+  int PimegaModuleRxFrameCount;
+  int PimegaModuleAcquisitionCount;
+  int PimegaModuleRdmaBufferUsage;
   int PimegaBackendStats;
   int PimegaMetadataField;
   int PimegaMetadataValue;

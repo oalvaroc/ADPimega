@@ -759,7 +759,11 @@ asynStatus pimegaDetector::writeInt32(asynUser *pasynUser, epicsInt32 value) {
     /* Set the parameter and readback in the parameter library.  This may be
      * overwritten when we read back the status at the end, but that's OK */
     setIntegerParam(function, value);
-    callParamCallbacks();
+
+    for (int i = 0; i < pimega->max_num_modules; i++) {
+      callParamCallbacks(i);
+    }
+
     PIMEGA_PRINT(pimega, TRACE_MASK_FLOW, "%s: Success - status=%d function=%s(%d), value=%d\n",
                  functionName, status, paramName, function, value);
     UPDATEIOCSTATUS(ok_str);
@@ -1061,40 +1065,29 @@ asynStatus pimegaDetector::readInt32(asynUser *pasynUser, epicsInt32 *value) {
     }
 
     setParameter(PimegaReceiveError, error);
-    setParameter(PimegaM1ReceiveError, (int)acq_status.STATUS_MODULEERROR[0]);
-    setParameter(PimegaM2ReceiveError, (int)acq_status.STATUS_MODULEERROR[1]);
-    setParameter(PimegaM3ReceiveError, (int)acq_status.STATUS_MODULEERROR[2]);
-    setParameter(PimegaM4ReceiveError, (int)acq_status.STATUS_MODULEERROR[3]);
-    setParameter(PimegaM1LostFrameCount, (int)acq_status.STATUS_LOSTFRAMECNT[0]);
-    setParameter(PimegaM2LostFrameCount, (int)acq_status.STATUS_LOSTFRAMECNT[1]);
-    setParameter(PimegaM3LostFrameCount, (int)acq_status.STATUS_LOSTFRAMECNT[2]);
-    setParameter(PimegaM4LostFrameCount, (int)acq_status.STATUS_LOSTFRAMECNT[3]);
-    setParameter(PimegaM1RxFrameCount, (int)acq_status.STATUS_NOOFFRAMES[0]);
-    setParameter(PimegaM2RxFrameCount, (int)acq_status.STATUS_NOOFFRAMES[1]);
-    setParameter(PimegaM3RxFrameCount, (int)acq_status.STATUS_NOOFFRAMES[2]);
-    setParameter(PimegaM4RxFrameCount, (int)acq_status.STATUS_NOOFFRAMES[3]);
-    setParameter(PimegaM1AquisitionCount,
-                 (int)acq_status.STATUS_NOOFACQUISITIONS[0]);
-    setParameter(PimegaM2AquisitionCount,
-                 (int)acq_status.STATUS_NOOFACQUISITIONS[1]);
-    setParameter(PimegaM3AquisitionCount,
-                 (int)acq_status.STATUS_NOOFACQUISITIONS[2]);
-    setParameter(PimegaM4AquisitionCount,
-                 (int)acq_status.STATUS_NOOFACQUISITIONS[3]);
-    setParameter(PimegaM1RdmaBufferUsage,
-                 (double)acq_status.STATUS_BUFFERUSED[0] * 100);
-    setParameter(PimegaM2RdmaBufferUsage,
-                 (double)acq_status.STATUS_BUFFERUSED[1] * 100);
-    setParameter(PimegaM3RdmaBufferUsage,
-                 (double)acq_status.STATUS_BUFFERUSED[2] * 100);
-    setParameter(PimegaM4RdmaBufferUsage,
-                 (double)acq_status.STATUS_BUFFERUSED[3] * 100);
+
+    for (int module = 0; module < pimega->max_num_modules; module++) {
+      setParameter(PimegaModuleReceiveError,
+                   (int)acq_status.STATUS_MODULEERROR[module], module);
+      setParameter(PimegaModuleLostFrameCount,
+                   (int)acq_status.STATUS_LOSTFRAMECNT[module], module);
+      setParameter(PimegaModuleRxFrameCount,
+                   (int)acq_status.STATUS_NOOFFRAMES[module], module);
+      setParameter(PimegaModuleAcquisitionCount,
+                   (int)acq_status.STATUS_NOOFACQUISITIONS[module], module);
+      setParameter(PimegaModuleRdmaBufferUsage,
+                   (double)acq_status.STATUS_BUFFERUSED[module] * 100, module);
+    }
+
     setParameter(PimegaIndexError, (int)acq_status.STATUS_INDEXERROR);
     setParameter(PimegaIndexCounter, (int)acq_status.STATUS_INDEXSENTACQUISITIONNUM);
     setParameter(ADNumImagesCounter, received_acq);
     setParameter(PimegaProcessedImageCounter, (int)acq_status.processedImageNum);
     setParameter(NDFileNumCaptured, (int)acq_status.STATUS_SAVEDFRAMENUM);
-    callParamCallbacks();
+
+    for (int i = 0; i < pimega->max_num_modules; i++) {
+      callParamCallbacks(i);
+    }
   } else if (function == PimegaModule) {
     *value = pimega->pimega_module;
   }
@@ -1165,7 +1158,7 @@ pimegaDetector::pimegaDetector(const char *portName, const char *address_module0
                                unsigned short backend_port, unsigned short vis_frame_port,
                                int IntAcqResetRDMA)
 
-    : ADDriver(portName, 1, 0, maxBuffers, maxMemory,
+    : ADDriver(portName, 10, 0, maxBuffers, maxMemory,
                asynInt32ArrayMask | asynFloat64ArrayMask | asynFloat32ArrayMask |
                    asynGenericPointerMask | asynInt16ArrayMask | asynInt8ArrayMask,
                asynInt32ArrayMask | asynFloat64ArrayMask | asynFloat32ArrayMask |
@@ -1414,39 +1407,18 @@ void pimegaDetector::createParameters(void) {
   createParam(pimegaLoadEqString, asynParamInt32Array, &PimegaLoadEqualization);
   createParam(pimegaExtBgInString, asynParamFloat64, &PimegaExtBgIn);
   createParam(pimegaExtBgSelString, asynParamInt32, &PimegaExtBgSel);
-  createParam(pimegaMbM1TempString, asynParamFloat32Array, &PimegaMBTemperatureM1);
-  createParam(pimegaMbM2TempString, asynParamFloat32Array, &PimegaMBTemperatureM2);
-  createParam(pimegaMbM3TempString, asynParamFloat32Array, &PimegaMBTemperatureM3);
-  createParam(pimegaMbM4TempString, asynParamFloat32Array, &PimegaMBTemperatureM4);
-  createParam(pimegaSensorM1TempString, asynParamFloat32Array, &PimegaSensorTemperatureM1);
-  createParam(pimegaSensorM2TempString, asynParamFloat32Array, &PimegaSensorTemperatureM2);
-  createParam(pimegaSensorM3TempString, asynParamFloat32Array, &PimegaSensorTemperatureM3);
-  createParam(pimegaSensorM4TempString, asynParamFloat32Array, &PimegaSensorTemperatureM4);
-  createParam(pimegaMBAvgM1String, asynParamFloat64, &PimegaMBAvgTSensorM1);
-  createParam(pimegaMBAvgM2String, asynParamFloat64, &PimegaMBAvgTSensorM2);
-  createParam(pimegaMBAvgM3String, asynParamFloat64, &PimegaMBAvgTSensorM3);
-  createParam(pimegaMBAvgM4String, asynParamFloat64, &PimegaMBAvgTSensorM4);
+  createParam(pimegaModuleMbTempString, asynParamFloat32Array, &PimegaModuleMBTemperature);
+  createParam(pimegaModuleSensorTempString, asynParamFloat32Array, &PimegaModuleSensorTemperature);
+  createParam(pimegaModuleMBAvgString, asynParamFloat64, &PimegaModuleMBAvgTSensor);
   createParam(pimegaLoadEqStartString, asynParamInt32, &PimegaLoadEqStart);
   createParam(pimegaReadSensorTemperatureString, asynParamInt32, &PimegaReadSensorTemperature);
-  createParam(pimegaMPAvgM1String, asynParamFloat64, &PimegaMPAvgTSensorM1);
-  createParam(pimegaMPAvgM2String, asynParamFloat64, &PimegaMPAvgTSensorM2);
-  createParam(pimegaMPAvgM3String, asynParamFloat64, &PimegaMPAvgTSensorM3);
-  createParam(pimegaMPAvgM4String, asynParamFloat64, &PimegaMPAvgTSensorM4);
+  createParam(pimegaModuleMPAvgString, asynParamFloat64, &PimegaModuleMPAvgTSensor);
   createParam(pimegaCheckSensorsString, asynParamInt32, &PimegaCheckSensors);
   createParam(pimegaReadMBTemperatureString, asynParamInt32, &PimegaReadMBTemperature);
   createParam(pimegaTempMonitorEnableString, asynParamInt32, &PimegaTempMonitorEnable);
-  createParam(pimegaDisabledSensorsM1String, asynParamInt32Array, &PimegaDisabledSensorsM1);
-  createParam(pimegaDisabledSensorsM2String, asynParamInt32Array, &PimegaDisabledSensorsM2);
-  createParam(pimegaDisabledSensorsM3String, asynParamInt32Array, &PimegaDisabledSensorsM3);
-  createParam(pimegaDisabledSensorsM4String, asynParamInt32Array, &PimegaDisabledSensorsM4);
-  createParam(pimegaM1TempStatusString, asynParamInt32, &PimegaTemperatureStatusM1);
-  createParam(pimegaM2TempStatusString, asynParamInt32, &PimegaTemperatureStatusM2);
-  createParam(pimegaM3TempStatusString, asynParamInt32, &PimegaTemperatureStatusM3);
-  createParam(pimegaM4TempStatusString, asynParamInt32, &PimegaTemperatureStatusM4);
-  createParam(pimegaM1TempHighestString, asynParamFloat64, &PimegaTemperatureHighestM1);
-  createParam(pimegaM2TempHighestString, asynParamFloat64, &PimegaTemperatureHighestM2);
-  createParam(pimegaM3TempHighestString, asynParamFloat64, &PimegaTemperatureHighestM3);
-  createParam(pimegaM4TempHighestString, asynParamFloat64, &PimegaTemperatureHighestM4);
+  createParam(pimegaModuleDisabledSensorsString, asynParamInt32Array, &PimegaModuleDisabledSensors);
+  createParam(pimegaModuleTempStatusString, asynParamInt32, &PimegaModuleTemperatureStatus);
+  createParam(pimegaModuleTempHighestString, asynParamFloat64, &PimegaModuleTemperatureHighest);
   createParam(pimegaEnableBulkProcessingString, asynParamInt32, &PimegaEnableBulkProcessing);
   createParam(pimegaAbortSaveString, asynParamInt32, &PimegaAbortSave);
   createParam(pimegaIndexEnableString, asynParamInt32, &PimegaIndexEnable);
@@ -1468,26 +1440,11 @@ void pimegaDetector::createParameters(void) {
   createParam(pimegaTraceMaskString, asynParamInt32, &PimegaTraceMask);
 
   createParam(pimegaReceiveErrorString, asynParamInt32, &PimegaReceiveError);
-  createParam(pimegaM1ReceiveErrorString, asynParamInt32, &PimegaM1ReceiveError);
-  createParam(pimegaM2ReceiveErrorString, asynParamInt32, &PimegaM2ReceiveError);
-  createParam(pimegaM3ReceiveErrorString, asynParamInt32, &PimegaM3ReceiveError);
-  createParam(pimegaM4ReceiveErrorString, asynParamInt32, &PimegaM4ReceiveError);
-  createParam(pimegaM1LostFrameCountString, asynParamInt32, &PimegaM1LostFrameCount);
-  createParam(pimegaM2LostFrameCountString, asynParamInt32, &PimegaM2LostFrameCount);
-  createParam(pimegaM3LostFrameCountString, asynParamInt32, &PimegaM3LostFrameCount);
-  createParam(pimegaM4LostFrameCountString, asynParamInt32, &PimegaM4LostFrameCount);
-  createParam(pimegaM1RxFrameCountString, asynParamInt32, &PimegaM1RxFrameCount);
-  createParam(pimegaM2RxFrameCountString, asynParamInt32, &PimegaM2RxFrameCount);
-  createParam(pimegaM3RxFrameCountString, asynParamInt32, &PimegaM3RxFrameCount);
-  createParam(pimegaM4RxFrameCountString, asynParamInt32, &PimegaM4RxFrameCount);
-  createParam(pimegaM1AquisitionCountString, asynParamInt32, &PimegaM1AquisitionCount);
-  createParam(pimegaM2AquisitionCountString, asynParamInt32, &PimegaM2AquisitionCount);
-  createParam(pimegaM3AquisitionCountString, asynParamInt32, &PimegaM3AquisitionCount);
-  createParam(pimegaM4AquisitionCountString, asynParamInt32, &PimegaM4AquisitionCount);
-  createParam(pimegaM1RdmaBufferUsageString, asynParamFloat64, &PimegaM1RdmaBufferUsage);
-  createParam(pimegaM2RdmaBufferUsageString, asynParamFloat64, &PimegaM2RdmaBufferUsage);
-  createParam(pimegaM3RdmaBufferUsageString, asynParamFloat64, &PimegaM3RdmaBufferUsage);
-  createParam(pimegaM4RdmaBufferUsageString, asynParamFloat64, &PimegaM4RdmaBufferUsage);
+  createParam(pimegaModuleReceiveErrorString, asynParamInt32, &PimegaModuleReceiveError);
+  createParam(pimegaModuleLostFrameCountString, asynParamInt32, &PimegaModuleLostFrameCount);
+  createParam(pimegaModuleRxFrameCountString, asynParamInt32, &PimegaModuleRxFrameCount);
+  createParam(pimegaModuleAcquisitionCountString, asynParamInt32, &PimegaModuleAcquisitionCount);
+  createParam(pimegaModuleRdmaBufferUsageString, asynParamFloat64, &PimegaModuleRdmaBufferUsage);
   createParam(pimegaBackendStatsString, asynParamInt32, &PimegaBackendStats);
   createParam(pimegaIndexErrorString, asynParamInt32, &PimegaIndexError);
   createParam(pimegaMetadataFieldString, asynParamOctet, &PimegaMetadataField);
@@ -1556,37 +1513,20 @@ asynStatus pimegaDetector::setDefaults(void) {
   setParameter(PimegaBackBuffer, 0.0);
   setParameter(ADImageMode, ADImageSingle);
   setParameter(PimegaReceiveError, 0);
-  setParameter(PimegaM1ReceiveError, 0);
-  setParameter(PimegaM2ReceiveError, 0);
-  setParameter(PimegaM3ReceiveError, 0);
-  setParameter(PimegaM4ReceiveError, 0);
-  setParameter(PimegaM1LostFrameCount, 0);
-  setParameter(PimegaM2LostFrameCount, 0);
-  setParameter(PimegaM3LostFrameCount, 0);
-  setParameter(PimegaM4LostFrameCount, 0);
-  setParameter(PimegaM1RxFrameCount, 0);
-  setParameter(PimegaM2RxFrameCount, 0);
-  setParameter(PimegaM3RxFrameCount, 0);
-  setParameter(PimegaM4RxFrameCount, 0);
-  setParameter(PimegaM1AquisitionCount, 0);
-  setParameter(PimegaM2AquisitionCount, 0);
-  setParameter(PimegaM3AquisitionCount, 0);
-  setParameter(PimegaM4AquisitionCount, 0);
-  setParameter(PimegaM1RdmaBufferUsage, 0.0);
-  setParameter(PimegaM2RdmaBufferUsage, 0.0);
-  setParameter(PimegaM3RdmaBufferUsage, 0.0);
-  setParameter(PimegaM4RdmaBufferUsage, 0.0);
   setParameter(PimegaIndexError, 0);
   setParameter(PimegaIndexCounter, 0);
   setParameter(PimegaProcessedImageCounter, 0);
-  setParameter(PimegaTemperatureHighestM1, 0.0);
-  setParameter(PimegaTemperatureHighestM2, 0.0);
-  setParameter(PimegaTemperatureHighestM3, 0.0);
-  setParameter(PimegaTemperatureHighestM4, 0.0);
-  setParameter(PimegaMPAvgTSensorM1, 0.0);
-  setParameter(PimegaMPAvgTSensorM2, 0.0);
-  setParameter(PimegaMPAvgTSensorM3, 0.0);
-  setParameter(PimegaMPAvgTSensorM4, 0.0);
+
+  for (int i = 0; i < pimega->max_num_modules; i++) {
+    setParameter(PimegaModuleReceiveError, 0, i);
+    setParameter(PimegaModuleLostFrameCount, 0, i);
+    setParameter(PimegaModuleRxFrameCount, 0, i);
+    setParameter(PimegaModuleAcquisitionCount, 0, i);
+    setParameter(PimegaModuleRdmaBufferUsage, 0.0, i);
+    setParameter(PimegaModuleTemperatureHighest, 0.0, i);
+    setParameter(PimegaModuleMPAvgTSensor, 0.0, i);
+  }
+
   setParameter(NDFileNumCaptured, 0);
   setParameter(PimegaFrameProcessMode, 0);
 
@@ -1947,10 +1887,6 @@ asynStatus pimegaDetector::sendImage(void) {
 }
 
 asynStatus pimegaDetector::checkSensors(void) {
-  int idxParam;
-
-  idxParam = PimegaDisabledSensorsM1;
-
   if (check_and_disable_sensors(pimega) != PIMEGA_SUCCESS)
     return asynError;
 
@@ -1958,8 +1894,9 @@ asynStatus pimegaDetector::checkSensors(void) {
     for (int sensor = 0; sensor < pimega->num_all_chips; sensor++) {
       PimegaDisabledSensors_[sensor] = (epicsInt32)(pimega->sensor_disabled[module][sensor]);
     }
-    doCallbacksInt32Array(PimegaDisabledSensors_, pimega->num_all_chips, idxParam, 0);
-    idxParam++;
+
+    doCallbacksInt32Array(PimegaDisabledSensors_, pimega->num_all_chips,
+                          PimegaModuleDisabledSensors, module);
   }
 
   return asynSuccess;
@@ -2223,11 +2160,8 @@ asynStatus pimegaDetector::getDacsOutSense(void) {
 }
 
 asynStatus pimegaDetector::getMbTemperature(void) {
-  int idxWaveform, idxAvg, rc;
+  int rc;
   float sum = 0.00, average;
-
-  idxWaveform = PimegaMBTemperatureM1;
-  idxAvg = PimegaMBAvgTSensorM1;
 
   rc = getMB_Temperatures(pimega);
   if (rc != PIMEGA_SUCCESS) return asynError;
@@ -2239,10 +2173,9 @@ asynStatus pimegaDetector::getMbTemperature(void) {
     }
     average = sum / pimega->num_mb_tsensors;
     sum = 0;
-    setParameter(idxAvg, average);
-    doCallbacksFloat32Array(PimegaMBTemperature_, pimega->num_mb_tsensors, idxWaveform, 0);
-    idxWaveform++;
-    idxAvg++;
+    setParameter(PimegaModuleMBAvgTSensor, average, module);
+    doCallbacksFloat32Array(PimegaMBTemperature_, pimega->num_mb_tsensors,
+                            PimegaModuleMBTemperature, module);
   }
 
   return asynSuccess;
@@ -2260,48 +2193,37 @@ asynStatus pimegaDetector::setTempMonitor(int enable) {
 }
 
 asynStatus pimegaDetector::getTemperatureStatus(void) {
-  int idxTempStatus[] = {PimegaTemperatureStatusM1, PimegaTemperatureStatusM2,
-                         PimegaTemperatureStatusM3, PimegaTemperatureStatusM4};
-
   for (int module = 0; module < pimega->max_num_modules; module++) {
-    setParameter(idxTempStatus[module], pimega->temperature.status[module]);
+    setParameter(PimegaModuleTemperatureStatus, pimega->temperature.status[module], module);
   }
+
   return asynSuccess;
 }
 
 asynStatus pimegaDetector::getTemperatureHighest(void) {
-  int idxTempHighest[] = {PimegaTemperatureHighestM1, PimegaTemperatureHighestM2,
-                          PimegaTemperatureHighestM3, PimegaTemperatureHighestM4};
-
   for (int module = 0; module < pimega->max_num_modules; module++) {
-    setParameter(idxTempHighest[module], pimega->temperature.highest[module]);
+    setParameter(PimegaModuleTemperatureHighest, pimega->temperature.highest[module], module);
   }
   return asynSuccess;
 }
 
 asynStatus pimegaDetector::getMedipixTemperatures(void) {
   int rc = 0;
-  int idxTemp[] = {PimegaSensorTemperatureM1, PimegaSensorTemperatureM2, PimegaSensorTemperatureM3,
-                   PimegaSensorTemperatureM4};
-  int idxAvg[] = {PimegaMPAvgTSensorM1, PimegaMPAvgTSensorM2, PimegaMPAvgTSensorM3,
-                  PimegaMPAvgTSensorM4};
   rc = getMedipixSensor_Temperatures(pimega);
   if (rc != PIMEGA_SUCCESS) return asynError;
   for (int module = 0; module < pimega->max_num_modules; module++) {
     doCallbacksFloat32Array(pimega->pimegaParam.allchip_temperature[module],
-                            pimega->num_all_chips, idxTemp[module], 0);
-    setParameter(idxAvg[module], pimega->pimegaParam.avg_chip_temperature[module]);
+                            pimega->num_all_chips, PimegaModuleSensorTemperature, module);
+    setParameter(PimegaModuleMPAvgTSensor, pimega->pimegaParam.avg_chip_temperature[module], module);
   }
   return asynSuccess;
 }
 
 asynStatus pimegaDetector::getMedipixAvgTemperature(void) {
-  int idxAvg = PimegaMPAvgTSensorM1;
   int rc = get_TemperatureSensorAvg(pimega);
   if (rc != PIMEGA_SUCCESS) return asynError;
   for (int module = 0; module < pimega->max_num_modules; module++) {
-    setParameter(idxAvg, pimega->pimegaParam.avg_chip_temperature[module]);
-    idxAvg++;
+    setParameter(PimegaModuleMPAvgTSensor, pimega->pimegaParam.avg_chip_temperature[module], module);
   }
   return asynSuccess;
 }
