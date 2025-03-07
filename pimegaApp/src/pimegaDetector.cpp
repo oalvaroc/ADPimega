@@ -402,10 +402,10 @@ void pimegaDetector::captureTask() {
        last time when the NDFileCapture is set to 0 */
 
     received_acq = 0;
-    for (int module = 1; module <= pimega->max_num_modules; module++) {
+    for (int module = 0; module < pimega->max_num_modules; module++) {
       if (received_acq == 0 ||
-          (int)pimega->acq_status_return.STATUS_NOOFACQUISITIONS[module - 1] > received_acq) {
-        received_acq = (int)pimega->acq_status_return.STATUS_NOOFACQUISITIONS[module - 1];
+          (int)pimega->acq_status_return.STATUS_NOOFACQUISITIONS[module] > received_acq) {
+        received_acq = (int)pimega->acq_status_return.STATUS_NOOFACQUISITIONS[module];
         if (received_acq < (int)pimega->acq_status_return.processedImageNum) {
           received_acq = (int)pimega->acq_status_return.processedImageNum;
         }
@@ -1048,10 +1048,10 @@ asynStatus pimegaDetector::readInt32(asynUser *pasynUser, epicsInt32 *value) {
       error = 0;
 
     received_acq = 0;
-    for (int module = 1; module <= pimega->max_num_modules; module++) {
+    for (int module = 0; module < pimega->max_num_modules; module++) {
       if (received_acq == 0 ||
-          (int)pimega->acq_status_return.STATUS_NOOFACQUISITIONS[module - 1] > received_acq) {
-        received_acq = (int)pimega->acq_status_return.STATUS_NOOFACQUISITIONS[module - 1];
+          (int)pimega->acq_status_return.STATUS_NOOFACQUISITIONS[module] > received_acq) {
+        received_acq = (int)pimega->acq_status_return.STATUS_NOOFACQUISITIONS[module];
         if (received_acq < (int)pimega->acq_status_return.processedImageNum) {
           received_acq = (int)pimega->acq_status_return.processedImageNum;
         }
@@ -1949,9 +1949,9 @@ asynStatus pimegaDetector::checkSensors(void) {
 
   idxParam = PimegaDisabledSensorsM1;
   rc = check_and_disable_sensors(pimega);
-  for (int module = 1; module <= pimega->max_num_modules; module++) {
+  for (int module = 0; module < pimega->max_num_modules; module++) {
     for (int sensor = 0; sensor < pimega->num_all_chips; sensor++) {
-      PimegaDisabledSensors_[sensor] = (epicsInt32)(pimega->sensor_disabled[module - 1][sensor]);
+      PimegaDisabledSensors_[sensor] = (epicsInt32)(pimega->sensor_disabled[module][sensor]);
     }
     doCallbacksInt32Array(PimegaDisabledSensors_, pimega->num_all_chips, idxParam, 0);
     idxParam++;
@@ -2228,9 +2228,9 @@ asynStatus pimegaDetector::getMbTemperature(void) {
   rc = getMB_Temperatures(pimega);
   if (rc != PIMEGA_SUCCESS) return asynError;
 
-  for (int module = 1; module <= pimega->max_num_modules; module++) {
+  for (int module = 0; module < pimega->max_num_modules; module++) {
     for (int i = 0; i < pimega->num_mb_tsensors; i++) {
-      PimegaMBTemperature_[i] = (epicsFloat32)(pimega->pimegaParam.mb_temperature[module - 1][i]);
+      PimegaMBTemperature_[i] = (epicsFloat32)(pimega->pimegaParam.mb_temperature[module][i]);
       sum += PimegaMBTemperature_[i];
     }
     average = sum / pimega->num_mb_tsensors;
@@ -2283,10 +2283,10 @@ asynStatus pimegaDetector::getMedipixTemperatures(void) {
                   PimegaMPAvgTSensorM4};
   rc = getMedipixSensor_Temperatures(pimega);
   if (rc != PIMEGA_SUCCESS) return asynError;
-  for (int module = 1; module <= pimega->max_num_modules; module++) {
-    doCallbacksFloat32Array(pimega->pimegaParam.allchip_temperature[module - 1],
-                            pimega->num_all_chips, idxTemp[module - 1], 0);
-    setParameter(idxAvg[module - 1], pimega->pimegaParam.avg_chip_temperature[module - 1]);
+  for (int module = 0; module < pimega->max_num_modules; module++) {
+    doCallbacksFloat32Array(pimega->pimegaParam.allchip_temperature[module],
+                            pimega->num_all_chips, idxTemp[module], 0);
+    setParameter(idxAvg[module], pimega->pimegaParam.avg_chip_temperature[module]);
   }
   return asynSuccess;
 }
@@ -2295,8 +2295,8 @@ asynStatus pimegaDetector::getMedipixAvgTemperature(void) {
   int idxAvg = PimegaMPAvgTSensorM1;
   int rc = get_TemperatureSensorAvg(pimega);
   if (rc != PIMEGA_SUCCESS) return asynError;
-  for (int module = 1; module <= pimega->max_num_modules; module++) {
-    setParameter(idxAvg, pimega->pimegaParam.avg_chip_temperature[module - 1]);
+  for (int module = 0; module < pimega->max_num_modules; module++) {
+    setParameter(idxAvg, pimega->pimegaParam.avg_chip_temperature[module]);
     idxAvg++;
   }
   return asynSuccess;
