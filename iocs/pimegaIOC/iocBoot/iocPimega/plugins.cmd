@@ -4,14 +4,23 @@
 #
 # $(PREFIX)      Prefix for all records
 # $(PORT)        The port name for the detector.
-# $(QSIZE)       The queue size for all plugins.
 # $(XSIZE)       The maximum image width; used to set the maximum size for row profiles in the NDPluginStats plugin and 1-D FFT
 #                   profiles in NDPluginFFT.
 # $(YSIZE)       The maximum image height; used to set the maximum size for column profiles in the NDPluginStats plugin
 # $(NELEMENTS)   Maximum number of elements in the resulting image
-# $(NCHANS)      The maximum number of time series points in the NDPluginStats, NDPluginROIStats, and NDPluginAttribute plugins
-# $(CBUFFS)      The maximum number of frames buffered in the NDPluginCircularBuff plugin
+#
+# Optional configuration variables:
+#
 # $(MAX_THREADS) The maximum number of threads for plugins which can run in multiple threads. Defaults to 5.
+# $(QSIZE)       The queue size for all plugins. Defaults to 20.
+# $(NCHANS)      The maximum number of time series points in the NDPluginStats,
+#                NDPluginROIStats, and NDPluginAttribute plugins. Defaults to 2048.
+# $(CBUFFS)      The maximum number of frames buffered in the
+#                NDPluginCircularBuff plugin. Defaults to 500.
+
+epicsEnvSet("QSIZE", "$(QSIZE=20)")
+epicsEnvSet("NCHANS", "$(NCHANS=2048)")
+epicsEnvSet("CBUFFS", "$(CBUFFS=500)")
 
 # Create a standard arrays plugin, set it to get data from pimega driver.
 NDStdArraysConfigure("Image1", "$(QSIZE)", 0, "$(PORT)", 0, 0)

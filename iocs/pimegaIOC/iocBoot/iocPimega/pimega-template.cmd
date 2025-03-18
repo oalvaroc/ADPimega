@@ -8,13 +8,6 @@ pimegaApp_registerRecordDeviceDriver(pdbbase)
 # The port name for the detector
 epicsEnvSet("PORT",   "PIMEGA")
 
-# The queue size for all plugins
-epicsEnvSet("QSIZE",  "20")
-# The maximum number of time seried points in the NDPluginStats plugin
-epicsEnvSet("NCHANS", "2048")
-# The maximum number of frames buffered in the NDPluginCircularBuff plugin
-epicsEnvSet("CBUFFS", "500")
-
 # The search path for database files
 epicsEnvSet("EPICS_DB_INCLUDE_PATH", "$(ADCORE)/db")
 
