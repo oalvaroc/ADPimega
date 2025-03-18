@@ -1,11 +1,10 @@
-# This is an example file for creating plugins
-# It uses the following environment variable macros
-# Many of the parameters defined in this file are also in commonPlugins_settings.req so if autosave is being
-# use the autosave value will replace the value passed to this file.
-
+# Standard set of plugins for PIMEGA detectors
+#
+# Configuration variables:
+#
 # $(PREFIX)      Prefix for all records
-# $(PORT)        The port name for the detector.  In autosave.
-# $(QSIZE)       The queue size for all plugins.  In autosave.
+# $(PORT)        The port name for the detector.
+# $(QSIZE)       The queue size for all plugins.
 # $(XSIZE)       The maximum image width; used to set the maximum size for row profiles in the NDPluginStats plugin and 1-D FFT
 #                   profiles in NDPluginFFT.
 # $(YSIZE)       The maximum image height; used to set the maximum size for column profiles in the NDPluginStats plugin
