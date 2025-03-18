@@ -6,8 +6,8 @@ epicsEnvSet("XSIZE",  "512")
 epicsEnvSet("YSIZE",  "1536")
 
 epicsEnvSet("PIMEGA_MODULE01_IP", "10.255.255.2")
-epicsEnvSet("PIMEGA_PORT", "60000")
 
+epicsEnvSet("PIMEGA_PORT", "60000")
 epicsEnvSet("FRAME_PORT", "6464")
 epicsEnvSet("COMMAND_PORT", "5412")
 
