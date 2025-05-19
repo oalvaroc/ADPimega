@@ -1947,10 +1947,13 @@ asynStatus pimegaDetector::sendImage(void) {
 }
 
 asynStatus pimegaDetector::checkSensors(void) {
-  int rc = 0, idxParam;
+  int idxParam;
 
   idxParam = PimegaDisabledSensorsM1;
-  rc = check_and_disable_sensors(pimega);
+
+  if (check_and_disable_sensors(pimega) != PIMEGA_SUCCESS)
+    return asynError;
+
   for (int module = 0; module < pimega->max_num_modules; module++) {
     for (int sensor = 0; sensor < pimega->num_all_chips; sensor++) {
       PimegaDisabledSensors_[sensor] = (epicsInt32)(pimega->sensor_disabled[module][sensor]);
@@ -1959,7 +1962,6 @@ asynStatus pimegaDetector::checkSensors(void) {
     idxParam++;
   }
 
-  if (rc != PIMEGA_SUCCESS) return asynError;
   return asynSuccess;
 }
 
