@@ -10,14 +10,15 @@
 # $(PREFIX)
 # Prefix for all records
 #
-# detectorModel=$(DMODEL)
-# Detector model, according to the following mapping:
-#   1 - pimega45D
-#   2 - pimega135DL
-#   3 - pimega135D
-#   4 - pimega540D
-#   5 - pimega450D
-#   6 - pimega450DS
+# detectorModel=$(MODEL_NAME)
+# Detector model name, according to the following list.
+#
+#  - pimega45d
+#  - pimega135dl
+#  - pimega135d
+#  - pimega540d
+#  - pimega450d
+#  - pimega450ds
 #
 # address_module{01..10}=$(PIMEGA_MODULE{01..10}_IP)
 # IP address for each detector module. Addresses which refer to a non-existent
@@ -76,6 +77,13 @@ on error halt
 
 < envPaths
 
+epicsEnvSet(MODEL_NUM_pimega45d, 1)
+epicsEnvSet(MODEL_NUM_pimega135dl, 2)
+epicsEnvSet(MODEL_NUM_pimega135d, 3)
+epicsEnvSet(MODEL_NUM_pimega540d, 4)
+epicsEnvSet(MODEL_NUM_pimega450d, 5)
+epicsEnvSet(MODEL_NUM_pimega450ds, 6)
+
 errlogInit(20000)
 
 dbLoadDatabase("$(TOP)/dbd/pimegaApp.dbd")
@@ -87,7 +95,7 @@ epicsEnvSet("PORT",   "PIMEGA")
 # The search path for database files
 epicsEnvSet("EPICS_DB_INCLUDE_PATH", "$(ADCORE)/db")
 
-pimegaDetectorConfig("$(PORT)",$(PIMEGA_MODULE01_IP="127.0.0.1"), $(PIMEGA_MODULE02_IP="127.0.0.1"),$(PIMEGA_MODULE03_IP="127.0.0.1"),$(PIMEGA_MODULE04_IP="127.0.0.1"),$(PIMEGA_MODULE05_IP="127.0.0.1"),$(PIMEGA_MODULE06_IP="127.0.0.1"),$(PIMEGA_MODULE07_IP="127.0.0.1"),$(PIMEGA_MODULE08_IP="127.0.0.1"),$(PIMEGA_MODULE09_IP="127.0.0.1"),$(PIMEGA_MODULE10_IP="127.0.0.1"),$(PIMEGA_PORT), $(XSIZE), $(YSIZE), $(DMODEL), $(ARRAYPOOL_MAX_BUFFERS="0"), $(ARRAYPOOL_MAX_MEMORY="0"), $(ASYN_THREAD_PRIORITY="0"), $(ASYN_STACK_SIZE="0"), $(SIMULATION="0"), $(BACKEND_ON="1"),$(ENABLE_LOG="0"), $(COMMAND_PORT), $(FRAME_PORT), $(RESET_RDMA="1"))
+pimegaDetectorConfig("$(PORT)",$(PIMEGA_MODULE01_IP="127.0.0.1"), $(PIMEGA_MODULE02_IP="127.0.0.1"),$(PIMEGA_MODULE03_IP="127.0.0.1"),$(PIMEGA_MODULE04_IP="127.0.0.1"),$(PIMEGA_MODULE05_IP="127.0.0.1"),$(PIMEGA_MODULE06_IP="127.0.0.1"),$(PIMEGA_MODULE07_IP="127.0.0.1"),$(PIMEGA_MODULE08_IP="127.0.0.1"),$(PIMEGA_MODULE09_IP="127.0.0.1"),$(PIMEGA_MODULE10_IP="127.0.0.1"),$(PIMEGA_PORT), $(XSIZE), $(YSIZE), $(MODEL_NUM_$(MODEL_NAME)), $(ARRAYPOOL_MAX_BUFFERS="0"), $(ARRAYPOOL_MAX_MEMORY="0"), $(ASYN_THREAD_PRIORITY="0"), $(ASYN_STACK_SIZE="0"), $(SIMULATION="0"), $(BACKEND_ON="1"),$(ENABLE_LOG="0"), $(COMMAND_PORT), $(FRAME_PORT), $(RESET_RDMA="1"))
 
 dbLoadRecords("$(ADPIMEGA)/db/pimega.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
 dbLoadRecords("$(ADPIMEGA)/db/NDFile.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=0,TIMEOUT=1")
