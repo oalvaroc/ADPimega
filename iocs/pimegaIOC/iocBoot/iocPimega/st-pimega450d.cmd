@@ -1,7 +1,7 @@
 #!../../bin/linux-x86_64/pimegaApp
 
 epicsEnvSet("PREFIX", "DET:PIMEGA450D:")
-epicsEnvSet("DMODEL", "5");
+epicsEnvSet("MODEL_NAME", "pimega450d")
 epicsEnvSet("XSIZE",  "15360")
 epicsEnvSet("YSIZE",  "512")
 
