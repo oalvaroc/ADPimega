@@ -2264,7 +2264,7 @@ asynStatus pimegaDetector::getTemperatureStatus(void) {
                          PimegaTemperatureStatusM3, PimegaTemperatureStatusM4};
 
   for (int module = 0; module < pimega->max_num_modules; module++) {
-    setIntegerParam(idxTempStatus[module], pimega->temperature.status[module]);
+    setParameter(idxTempStatus[module], pimega->temperature.status[module]);
   }
   return asynSuccess;
 }
