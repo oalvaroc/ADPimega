@@ -1,3 +1,7 @@
+file "pimega.template" {
+  {}
+}
+
 file "module.template" {
    pattern { MODULE, ADDR }
            { M1:,    0    }
