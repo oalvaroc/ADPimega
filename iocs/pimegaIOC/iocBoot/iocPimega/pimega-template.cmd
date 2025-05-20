@@ -73,6 +73,8 @@
 # stackSize=$(ASYN_STACK_SIZE), default 0
 # The stack size for the asyn port driver thread if ASYN_CANBLOCK is set in asynFlags.
 
+on error halt
+
 < envPaths
 
 errlogInit(20000)
