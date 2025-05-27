@@ -7,7 +7,6 @@
 #
 # $(DMODEL)
 # Detector model, according to the following mapping:
-#   0 - mobipix
 #   1 - pimega45D
 #   2 - pimega135DL
 #   3 - pimega135D
