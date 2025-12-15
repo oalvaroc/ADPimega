@@ -1521,14 +1521,6 @@ record(mbbo,"$(P)$(R)IndexSendMode") {
 }
 
 
-record(longin, "$(P)$(R)IndexSentFramesCounter_RBV") {
-	field(DESC, "Frames sent to index")
-	field(DTYP, "asynInt32")
-	field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))INDEX_COUNTER")
-    field(SCAN, "I/O Intr")
-}
-
-
 record(longin, "$(P)$(R)ProcessedAcquisitionCounter_RBV") {
 	field(DESC, "Acquisitions processed ready to save")
 	field(DTYP, "asynInt32")
@@ -1679,48 +1671,6 @@ record(longin, "$(P)$(R)BackendStats_RBV") {
 	field(DTYP, "asynInt32")
 	field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BACKEND_STATS")
     field(SCAN, ".1 second")
-}
-
-record(longin, "$(P)$(R)IndexError_RBV") {
-	field(DESC, "Index error")
-	field(DTYP, "asynInt32")
-	field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))INDEX_ERROR")
-    field(SCAN, "I/O Intr")
-}
-
-record(longin, "$(P)$(R)RxError_RBV") {
-	field(DESC, "Reception error")
-	field(DTYP, "asynInt32")
-	field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))RX_ERROR")
-    field(SCAN, "I/O Intr")
-}
-
-record(longin, "$(P)$(R)M1:RxError_RBV") {
-	field(DESC, "Module 1 reception error")
-	field(DTYP, "asynInt32")
-	field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))M1_RX_ERROR")
-    field(SCAN, "I/O Intr")
-}
-
-record(longin, "$(P)$(R)M2:RxError_RBV") {
-	field(DESC, "Module 2 reception error")
-	field(DTYP, "asynInt32")
-	field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))M2_RX_ERROR")
-    field(SCAN, "I/O Intr")
-}
-
-record(longin, "$(P)$(R)M3:RxError_RBV") {
-	field(DESC, "Module 3 reception error")
-	field(DTYP, "asynInt32")
-	field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))M3_RX_ERROR")
-    field(SCAN, "I/O Intr")
-}
-
-record(longin, "$(P)$(R)M4:RxError_RBV") {
-	field(DESC, "Module 4 reception error")
-	field(DTYP, "asynInt32")
-	field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))M4_RX_ERROR")
-    field(SCAN, "I/O Intr")
 }
 
 record(longin, "$(P)$(R)M1:LostFrameCount_RBV") {
