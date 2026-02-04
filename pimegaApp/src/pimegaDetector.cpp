@@ -217,9 +217,7 @@ void pimegaDetector::acqTask() {
              for index to receive the images or both */
           if (pimega->acq_status_return.done != DONE_ACQ) {
             UPDATEIOCSTATUS("Not all images received. Waiting");
-          } else if (indexEnableBool == true &&
-                     pimega->acq_status_return.STATUS_INDEXSENTACQUISITIONNUM <
-                         (unsigned int)pimega->acquireParam.numCapture) {
+          } else if (indexEnableBool == true) {
             UPDATEIOCSTATUS("Sending frames to Index");
           } else if (processedBackendCount < (unsigned int)pimega->acquireParam.numCapture) {
             UPDATEIOCSTATUS("Images received, processing");
@@ -246,9 +244,7 @@ void pimegaDetector::acqTask() {
             } else if (autoSave == 1 &&
                        processedBackendCount < pimega->acq_status_return.STATUS_SAVEDFRAMENUM) {
               UPDATEIOCSTATUS("Saving images..");
-            } else if (indexEnableBool == true &&
-                       pimega->acq_status_return.STATUS_INDEXSENTACQUISITIONNUM <
-                           (unsigned int)pimega->acquireParam.numCapture) {
+            } else if (indexEnableBool == true) {
               UPDATEIOCSTATUS("Sending frames to Index");
             } else if (acquireStatus == DONE_ACQ) {
               finishAcq(triggerMode, acquire, acquireStatus,
@@ -273,9 +269,6 @@ void pimegaDetector::acqTask() {
       /* Errors reported by backend override previous messages. */
       if (moduleError != false) {
         UPDATEIOCSTATUS("Detector error");
-        setIntegerParam(ADStatus, ADStatusError);
-      } else if (pimega->acq_status_return.STATUS_INDEXERROR != false) {
-        UPDATEIOCSTATUS("Index error");
         setIntegerParam(ADStatus, ADStatusError);
       }
     }
@@ -372,7 +365,6 @@ void pimegaDetector::captureTask() {
       get_acqStatus_from_backend(pimega);
       moduleError = false;
       recievedBackendCount = UINT64_MAX;
-      moduleError |= pimega->acq_status_return.STATUS_MODULEERROR[0];
       recievedBackendCount = 0;
       /*Anamoly detection. Upon incorrect configuration the detector, a number
         of images larger that what has been requested may arrive. In that case,
@@ -441,8 +433,6 @@ void pimegaDetector::captureTask() {
     /* Errors reported by backend override previous messages. */
     if (moduleError != false) {
       UPDATESERVERSTATUS("Detector dropped frames");
-    } else if (pimega->acq_status_return.STATUS_INDEXERROR != false) {
-      UPDATESERVERSTATUS("Index not responding");
     }
   }
 }
@@ -1034,7 +1024,6 @@ asynStatus pimegaDetector::readInt32(asynUser *pasynUser, epicsInt32 *value) {
   int scanStatus, acquireRunning, autoSave, received_acq;
   int backendStatus;
   const char *paramName;
-  int error;
   getParamName(function, &paramName);
 
   getParameter(ADStatus, &scanStatus);
@@ -1045,14 +1034,6 @@ asynStatus pimegaDetector::readInt32(asynUser *pasynUser, epicsInt32 *value) {
   const auto &acq_status = pimega->acq_status_return;
 
   if (function == PimegaBackendStats) {
-    if (acq_status.STATUS_MODULEERROR[0] == 1 ||
-        acq_status.STATUS_MODULEERROR[1] == 1 ||
-        acq_status.STATUS_MODULEERROR[2] == 1 ||
-        acq_status.STATUS_MODULEERROR[3] == 1)
-      error = 1;
-    else
-      error = 0;
-
     received_acq = 0;
     for (int module = 0; module < pimega->max_num_modules; module++) {
       if (received_acq == 0 ||
@@ -1064,11 +1045,7 @@ asynStatus pimegaDetector::readInt32(asynUser *pasynUser, epicsInt32 *value) {
       }
     }
 
-    setParameter(PimegaReceiveError, error);
-
     for (int module = 0; module < pimega->max_num_modules; module++) {
-      setParameter(PimegaModuleReceiveError,
-                   (int)acq_status.STATUS_MODULEERROR[module], module);
       setParameter(PimegaModuleLostFrameCount,
                    (int)acq_status.STATUS_LOSTFRAMECNT[module], module);
       setParameter(PimegaModuleRxFrameCount,
@@ -1079,8 +1056,6 @@ asynStatus pimegaDetector::readInt32(asynUser *pasynUser, epicsInt32 *value) {
                    (double)acq_status.STATUS_BUFFERUSED[module] * 100, module);
     }
 
-    setParameter(PimegaIndexError, (int)acq_status.STATUS_INDEXERROR);
-    setParameter(PimegaIndexCounter, (int)acq_status.STATUS_INDEXSENTACQUISITIONNUM);
     setParameter(ADNumImagesCounter, received_acq);
     setParameter(PimegaProcessedImageCounter, (int)acq_status.processedImageNum);
     setParameter(NDFileNumCaptured, (int)acq_status.STATUS_SAVEDFRAMENUM);
@@ -1426,7 +1401,6 @@ void pimegaDetector::createParameters(void) {
 
   createParam(pimegaIndexSendModeString, asynParamInt32, &PimegaIndexSendMode);
   createParam(pimegaIndexIDString, asynParamOctet, &PimegaIndexID);
-  createParam(pimegaIndexCounterString, asynParamInt32, &PimegaIndexCounter);
   createParam(pimegaProcessedCounterString, asynParamInt32, &PimegaProcessedImageCounter);
 
   createParam(pimegaMBSendModeString, asynParamInt32, &PimegaMBSendMode);
@@ -1439,14 +1413,11 @@ void pimegaDetector::createParameters(void) {
   createParam(pimegaTraceMaskFlowString, asynParamInt32, &PimegaTraceMaskFlow);
   createParam(pimegaTraceMaskString, asynParamInt32, &PimegaTraceMask);
 
-  createParam(pimegaReceiveErrorString, asynParamInt32, &PimegaReceiveError);
-  createParam(pimegaModuleReceiveErrorString, asynParamInt32, &PimegaModuleReceiveError);
   createParam(pimegaModuleLostFrameCountString, asynParamInt32, &PimegaModuleLostFrameCount);
   createParam(pimegaModuleRxFrameCountString, asynParamInt32, &PimegaModuleRxFrameCount);
   createParam(pimegaModuleAcquisitionCountString, asynParamInt32, &PimegaModuleAcquisitionCount);
   createParam(pimegaModuleRdmaBufferUsageString, asynParamFloat64, &PimegaModuleRdmaBufferUsage);
   createParam(pimegaBackendStatsString, asynParamInt32, &PimegaBackendStats);
-  createParam(pimegaIndexErrorString, asynParamInt32, &PimegaIndexError);
   createParam(pimegaMetadataFieldString, asynParamOctet, &PimegaMetadataField);
   createParam(pimegaMetadataValueString, asynParamOctet, &PimegaMetadataValue);
   createParam(pimegaMetadataOMString, asynParamOctet, &PimegaMetadataOM);
@@ -1512,13 +1483,9 @@ asynStatus pimegaDetector::setDefaults(void) {
   setParameter(NDFileWriteMessage, "");
   setParameter(PimegaBackBuffer, 0.0);
   setParameter(ADImageMode, ADImageSingle);
-  setParameter(PimegaReceiveError, 0);
-  setParameter(PimegaIndexError, 0);
-  setParameter(PimegaIndexCounter, 0);
   setParameter(PimegaProcessedImageCounter, 0);
 
   for (int i = 0; i < pimega->max_num_modules; i++) {
-    setParameter(PimegaModuleReceiveError, 0, i);
     setParameter(PimegaModuleLostFrameCount, 0, i);
     setParameter(PimegaModuleRxFrameCount, 0, i);
     setParameter(PimegaModuleAcquisitionCount, 0, i);

@@ -161,7 +161,6 @@ typedef enum ioc_trigger_mode_t {
 #define pimegaIndexEnableString "INDEX_ENABLE"
 #define pimegaAcquireShmemEnableString "ACQ_TO_SHMEM_ENABLE"
 #define pimegaIndexSendModeString "INDEX_SEND_MODE"
-#define pimegaIndexCounterString "INDEX_COUNTER"
 #define pimegaProcessedCounterString "PROCESSED_COUNTER"
 #define pimegaDistanceString "DISTANCE"
 #define pimegaLogFileString "LOGFILE"
@@ -172,9 +171,6 @@ typedef enum ioc_trigger_mode_t {
 #define pimegaTraceMaskDriverIOString "TRACE_MASK_DRIVERIO"
 #define pimegaTraceMaskFlowString "TRACE_MASK_FLOW"
 #define pimegaTraceMaskString "TRACE_MASK"
-#define pimegaReceiveErrorString "RX_ERROR"
-#define pimegaIndexErrorString "INDEX_ERROR"
-#define pimegaModuleReceiveErrorString "MODULE_RX_ERROR"
 #define pimegaModuleLostFrameCountString "MODULE_LOST_FRAME_COUNT"
 #define pimegaModuleRxFrameCountString "MODULE_RECEIVED_FRAME_COUNT"
 #define pimegaModuleAcquisitionCountString "MODULE_RECEIVED_ACQUISITION_COUNT"
@@ -299,7 +295,6 @@ class pimegaDetector : public ADDriver {
   int PimegaIndexID;
   int PimegaIndexEnable;
   int PimegaIndexSendMode;
-  int PimegaIndexCounter;
   int PimegaProcessedImageCounter;
   int PimegaDistance;
   int PimegaLoadEqStart;
@@ -310,8 +305,6 @@ class pimegaDetector : public ADDriver {
   int PimegaTraceMaskDriverIO;
   int PimegaTraceMask;
   int PimegaTraceMaskFlow;
-  int PimegaReceiveError;
-  int PimegaModuleReceiveError;
   int PimegaModuleLostFrameCount;
   int PimegaModuleRxFrameCount;
   int PimegaModuleAcquisitionCount;
@@ -320,7 +313,6 @@ class pimegaDetector : public ADDriver {
   int PimegaMetadataField;
   int PimegaMetadataValue;
   int PimegaMetadataOM;
-  int PimegaIndexError;
   int PimegaFrameProcessMode;
   NDArray *PimegaNDArray = NULL;
   int PimegaLogFile;
