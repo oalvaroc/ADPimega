@@ -2392,20 +2392,20 @@ asynStatus pimegaDetector::configureAlignment(bool alignment_mode) {
 }
 
 /* Code for iocsh registration */
-static const iocshArg pimegaDetectorConfigArg0 = {"Port name", iocshArgString};
-static const iocshArg pimegaDetectorConfigArg1 = {"pimega module 1 address", iocshArgString};
-static const iocshArg pimegaDetectorConfigArg2 = {"pimega module 2 address", iocshArgString};
-static const iocshArg pimegaDetectorConfigArg3 = {"pimega module 3 address", iocshArgString};
-static const iocshArg pimegaDetectorConfigArg4 = {"pimega module 4 address", iocshArgString};
-static const iocshArg pimegaDetectorConfigArg5 = {"pimega module 5 address", iocshArgString};
-static const iocshArg pimegaDetectorConfigArg6 = {"pimega module 6 address", iocshArgString};
-static const iocshArg pimegaDetectorConfigArg7 = {"pimega module 7 address", iocshArgString};
-static const iocshArg pimegaDetectorConfigArg8 = {"pimega module 8 address", iocshArgString};
-static const iocshArg pimegaDetectorConfigArg9 = {"pimega module 9 address", iocshArgString};
-static const iocshArg pimegaDetectorConfigArg10 = {"pimega module 10 address", iocshArgString};
-static const iocshArg pimegaDetectorConfigArg11 = {"pimega port", iocshArgInt};
-static const iocshArg pimegaDetectorConfigArg12 = {"maxSizeX", iocshArgInt};
-static const iocshArg pimegaDetectorConfigArg13 = {"maxSizeY", iocshArgInt};
+static const iocshArg pimegaDetectorConfigArg0 = {"portName", iocshArgString};
+static const iocshArg pimegaDetectorConfigArg1 = {"address_module01", iocshArgString};
+static const iocshArg pimegaDetectorConfigArg2 = {"address_module02", iocshArgString};
+static const iocshArg pimegaDetectorConfigArg3 = {"address_module03", iocshArgString};
+static const iocshArg pimegaDetectorConfigArg4 = {"address_module04", iocshArgString};
+static const iocshArg pimegaDetectorConfigArg5 = {"address_module05", iocshArgString};
+static const iocshArg pimegaDetectorConfigArg6 = {"address_module06", iocshArgString};
+static const iocshArg pimegaDetectorConfigArg7 = {"address_module07", iocshArgString};
+static const iocshArg pimegaDetectorConfigArg8 = {"address_module08", iocshArgString};
+static const iocshArg pimegaDetectorConfigArg9 = {"address_module09", iocshArgString};
+static const iocshArg pimegaDetectorConfigArg10 = {"address_module10", iocshArgString};
+static const iocshArg pimegaDetectorConfigArg11 = {"port", iocshArgInt};
+static const iocshArg pimegaDetectorConfigArg12 = {"SizeX", iocshArgInt};
+static const iocshArg pimegaDetectorConfigArg13 = {"SizeY", iocshArgInt};
 static const iocshArg pimegaDetectorConfigArg14 = {"detectorModel", iocshArgInt};
 static const iocshArg pimegaDetectorConfigArg15 = {"maxBuffers", iocshArgInt};
 static const iocshArg pimegaDetectorConfigArg16 = {"maxMemory", iocshArgInt};
